@@ -60,7 +60,18 @@ function App() {
     loadDashboardData();
     loadNiches();
     loadInterviews();
+    loadPricingPlans();
   }, []);
+
+  const loadPricingPlans = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/pricing/plans`);
+      const data = await response.json();
+      setPricingPlans(data.plans || []);
+    } catch (error) {
+      console.error('Error loading pricing plans:', error);
+    }
+  };
 
   const loadDashboardData = async () => {
     setLoading(true);
