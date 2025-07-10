@@ -975,53 +975,142 @@ function App() {
           </div>
         </div>
 
-        {/* Video Interview Stats */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            📱 Video Interview Analytics
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl">
-              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">47</div>
-              <div className="text-sm text-blue-800 dark:text-blue-200">Videos Grabados Hoy</div>
+        {/* Premium Video Analytics */}
+        <div className="card-premium p-10 ai-glow">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2">
+                Analíticas de Video Premium
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                Análisis en tiempo real impulsado por IA avanzada
+              </p>
             </div>
-            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl">
-              <div className="text-3xl font-bold text-green-600 dark:text-green-400">92%</div>
-              <div className="text-sm text-green-800 dark:text-green-200">Calidad de Audio/Video</div>
+            <div className="p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl text-white">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
             </div>
-            <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl">
-              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">1.2m</div>
-              <div className="text-sm text-purple-800 dark:text-purple-200">Tiempo Promedio</div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center p-8 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl border border-blue-200 dark:border-blue-800 hover:scale-105 transition-all duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </div>
+              <div className="text-4xl font-black text-blue-600 dark:text-blue-400 mb-2">127</div>
+              <div className="text-sm font-medium text-blue-800 dark:text-blue-200">Videos Analizados Hoy</div>
+              <div className="text-xs text-blue-600 dark:text-blue-400 mt-2">+23% vs ayer</div>
+            </div>
+            
+            <div className="text-center p-8 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-green-900/20 dark:via-emerald-900/20 dark:to-teal-900/20 rounded-2xl border border-green-200 dark:border-green-800 hover:scale-105 transition-all duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="text-4xl font-black text-green-600 dark:text-green-400 mb-2">96%</div>
+              <div className="text-sm font-medium text-green-800 dark:text-green-200">Calidad Audio/Video</div>
+              <div className="text-xs text-green-600 dark:text-green-400 mt-2">Excelente calidad</div>
+            </div>
+            
+            <div className="text-center p-8 bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 dark:from-purple-900/20 dark:via-pink-900/20 dark:to-rose-900/20 rounded-2xl border border-purple-200 dark:border-purple-800 hover:scale-105 transition-all duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="text-4xl font-black text-purple-600 dark:text-purple-400 mb-2">1.4m</div>
+              <div className="text-sm font-medium text-purple-800 dark:text-purple-200">Duración Promedio</div>
+              <div className="text-xs text-purple-600 dark:text-purple-400 mt-2">Óptimo para IA</div>
+            </div>
+          </div>
+          
+          {/* AI Insights */}
+          <div className="mt-8 p-6 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-2xl border border-indigo-200 dark:border-indigo-800">
+            <div className="flex items-center mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-3">
+                <Icons.Sparkles className="text-white" />
+              </div>
+              <div>
+                <div className="font-bold text-gray-900 dark:text-white">Insights de IA</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Análisis predictivo en tiempo real</div>
+              </div>
+            </div>
+            <div className="text-sm text-gray-700 dark:text-gray-300">
+              La IA ha detectado un incremento del 34% en la calidad de comunicación de los candidatos que utilizan nuestros consejos de video-pitch.
             </div>
           </div>
         </div>
 
-        {/* Niche Distribution */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            📊 Talent Distribution by Niche
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {Object.entries(analytics.niche_distribution).map(([niche, data]) => (
-              <div key={niche} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-lg transition-all duration-200">
-                <div className="font-semibold text-gray-900 dark:text-white capitalize flex items-center">
-                  <span className="mr-2">
-                    {niche === 'tech' && '💻'}
-                    {niche === 'creative' && '🎨'}
-                    {niche === 'health' && '⚕️'}
-                    {niche === 'finance' && '💰'}
-                    {niche === 'marketing' && '📢'}
-                    {niche === 'sales' && '📈'}
-                    {niche === 'operations' && '⚙️'}
-                    {niche === 'education' && '📚'}
-                  </span>
-                  {niche}
+        {/* Premium Talent Distribution */}
+        <div className="card-premium p-10">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2">
+                Distribución de Talento por Sector
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                Análisis detallado de nuestra base de talentos
+              </p>
+            </div>
+            <div className="p-4 bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl text-white">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Object.entries(analytics.niche_distribution).map(([niche, data]) => {
+              const nicheInfo = {
+                tech: { icon: '💻', color: 'from-blue-500 to-indigo-600', bg: 'from-blue-50 to-indigo-50', border: 'border-blue-200' },
+                creative: { icon: '🎨', color: 'from-purple-500 to-pink-600', bg: 'from-purple-50 to-pink-50', border: 'border-purple-200' },
+                health: { icon: '⚕️', color: 'from-green-500 to-emerald-600', bg: 'from-green-50 to-emerald-50', border: 'border-green-200' },
+                finance: { icon: '💰', color: 'from-yellow-500 to-orange-600', bg: 'from-yellow-50 to-orange-50', border: 'border-yellow-200' },
+                marketing: { icon: '📢', color: 'from-red-500 to-pink-600', bg: 'from-red-50 to-pink-50', border: 'border-red-200' },
+                sales: { icon: '📈', color: 'from-teal-500 to-cyan-600', bg: 'from-teal-50 to-cyan-50', border: 'border-teal-200' },
+                operations: { icon: '⚙️', color: 'from-gray-500 to-slate-600', bg: 'from-gray-50 to-slate-50', border: 'border-gray-200' },
+                education: { icon: '📚', color: 'from-orange-500 to-red-600', bg: 'from-orange-50 to-red-50', border: 'border-orange-200' }
+              };
+              
+              const info = nicheInfo[niche] || nicheInfo.tech;
+              
+              return (
+                <div key={niche} className={`p-6 bg-gradient-to-br ${info.bg} dark:from-gray-800 dark:to-gray-700 rounded-2xl border ${info.border} dark:border-gray-600 hover:scale-105 transition-all duration-300 group cursor-pointer`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-12 h-12 bg-gradient-to-br ${info.color} rounded-xl flex items-center justify-center text-white text-xl font-bold group-hover:scale-110 transition-transform`}>
+                      {info.icon}
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl font-black text-gray-900 dark:text-white">{data.candidates}</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">candidatos</div>
+                    </div>
+                  </div>
+                  <div className="font-bold text-gray-900 dark:text-white capitalize mb-1">
+                    {niche === 'tech' ? 'Tecnología' : 
+                     niche === 'creative' ? 'Creativos' :
+                     niche === 'health' ? 'Salud' :
+                     niche === 'finance' ? 'Finanzas' :
+                     niche === 'marketing' ? 'Marketing' :
+                     niche === 'sales' ? 'Ventas' :
+                     niche === 'operations' ? 'Operaciones' :
+                     'Educación'}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    {data.jobs} empleos activos
+                  </div>
+                  <div className="mt-3 w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                    <div 
+                      className={`h-2 bg-gradient-to-r ${info.color} rounded-full transition-all duration-1000`}
+                      style={{width: `${Math.min(100, (data.candidates / Math.max(...Object.values(analytics.niche_distribution).map(d => d.candidates))) * 100)}%`}}
+                    ></div>
+                  </div>
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  {data.candidates} candidates, {data.jobs} jobs
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
