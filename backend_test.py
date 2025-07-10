@@ -227,7 +227,7 @@ class TrabajaAITester:
         return success
 
     def test_get_dashboard_analytics(self):
-        """Test retrieving dashboard analytics"""
+        """Test retrieving dashboard analytics with specific expected numbers"""
         success, response = self.run_test(
             "Get Dashboard Analytics",
             "GET",
@@ -236,7 +236,123 @@ class TrabajaAITester:
         )
         
         if success:
-            print(f"Dashboard stats: {response.get('total_candidates', 0)} candidates, {response.get('total_jobs', 0)} jobs, {response.get('total_matches', 0)} matches")
+            # Expected numbers from the implementation
+            expected_values = {
+                'total_candidates': 2847,
+                'total_jobs': 193,
+                'total_matches': 5624,
+                'success_rate': 91.2,
+                'candidates_with_video': 1289,
+                'video_completion_rate': 94.2
+            }
+            
+            print(f"📊 Dashboard Analytics Results:")
+            all_correct = True
+            
+            for key, expected in expected_values.items():
+                actual = response.get(key)
+                status = "✅" if actual == expected else "❌"
+                print(f"  {status} {key}: {actual} (expected: {expected})")
+                if actual != expected:
+                    all_correct = False
+            
+            # Check niche distribution
+            niche_stats = response.get('niche_distribution', {})
+            expected_tech_candidates = 1247
+            actual_tech_candidates = niche_stats.get('tech', {}).get('candidates', 0)
+            tech_status = "✅" if actual_tech_candidates == expected_tech_candidates else "❌"
+            print(f"  {tech_status} tech_candidates: {actual_tech_candidates} (expected: {expected_tech_candidates})")
+            
+            if actual_tech_candidates != expected_tech_candidates:
+                all_correct = False
+            
+            if all_correct:
+                print("🎉 All dashboard numbers are correct!")
+            else:
+                print("⚠️  Some dashboard numbers don't match expected values")
+        
+        return success
+
+    def test_get_video_analytics(self):
+        """Test retrieving video analytics with specific expected numbers"""
+        success, response = self.run_test(
+            "Get Video Analytics",
+            "GET",
+            "api/analytics/video",
+            200
+        )
+        
+        if success:
+            # Expected numbers from the implementation
+            expected_values = {
+                'total_videos': 1289,
+                'avg_communication_score': 87.3,
+                'avg_confidence_score': 82.1,
+                'avg_professionalism_score': 91.8,
+                'avg_energy_level': 78.5
+            }
+            
+            print(f"🎥 Video Analytics Results:")
+            all_correct = True
+            
+            for key, expected in expected_values.items():
+                actual = response.get(key)
+                status = "✅" if actual == expected else "❌"
+                print(f"  {status} {key}: {actual} (expected: {expected})")
+                if actual != expected:
+                    all_correct = False
+            
+            if all_correct:
+                print("🎉 All video analytics numbers are correct!")
+            else:
+                print("⚠️  Some video analytics numbers don't match expected values")
+        
+        return success
+
+    def test_sector_distribution(self):
+        """Test sector distribution numbers in dashboard analytics"""
+        success, response = self.run_test(
+            "Get Dashboard Analytics for Sector Distribution",
+            "GET",
+            "api/analytics/dashboard",
+            200
+        )
+        
+        if success:
+            niche_stats = response.get('niche_distribution', {})
+            expected_distribution = {
+                'tech': {'candidates': 1247, 'jobs': 89},
+                'creative': {'candidates': 521, 'jobs': 34},
+                'health': {'candidates': 389, 'jobs': 28},
+                'finance': {'candidates': 278, 'jobs': 19},
+                'marketing': {'candidates': 234, 'jobs': 15},
+                'sales': {'candidates': 178, 'jobs': 8},
+                'operations': {'candidates': 156, 'jobs': 7},
+                'education': {'candidates': 89, 'jobs': 3}
+            }
+            
+            print(f"🏢 Sector Distribution Results:")
+            all_correct = True
+            
+            for sector, expected_data in expected_distribution.items():
+                actual_data = niche_stats.get(sector, {})
+                actual_candidates = actual_data.get('candidates', 0)
+                actual_jobs = actual_data.get('jobs', 0)
+                
+                candidates_status = "✅" if actual_candidates == expected_data['candidates'] else "❌"
+                jobs_status = "✅" if actual_jobs == expected_data['jobs'] else "❌"
+                
+                print(f"  {sector.title()}:")
+                print(f"    {candidates_status} Candidates: {actual_candidates} (expected: {expected_data['candidates']})")
+                print(f"    {jobs_status} Jobs: {actual_jobs} (expected: {expected_data['jobs']})")
+                
+                if actual_candidates != expected_data['candidates'] or actual_jobs != expected_data['jobs']:
+                    all_correct = False
+            
+            if all_correct:
+                print("🎉 All sector distribution numbers are correct!")
+            else:
+                print("⚠️  Some sector distribution numbers don't match expected values")
         
         return success
 
