@@ -11,6 +11,8 @@ import json
 import asyncio
 from enum import Enum
 import base64
+import hashlib
+import base64
 
 app = FastAPI(title="TRABAJAI API", version="2.0.0")
 
