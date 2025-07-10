@@ -1375,7 +1375,7 @@ function App() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div className="text-4xl font-black text-purple-600 dark:text-purple-400 mb-2">1.4m</div>
+              <div className="text-4xl font-black text-purple-600 dark:text-purple-400 mb-2">1.8m</div>
               <div className="text-sm font-medium text-purple-800 dark:text-purple-200">Duración Promedio</div>
               <div className="text-xs text-purple-600 dark:text-purple-400 mt-2">Óptimo para IA</div>
             </div>
