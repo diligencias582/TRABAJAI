@@ -166,46 +166,85 @@ function App() {
 
   const VideoInterviewModule = () => {
     return (
-      <div className="max-w-6xl mx-auto p-6">
-        {/* Hero Section */}
-        <div className="relative bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 rounded-3xl overflow-hidden mb-8">
-          <div className="absolute inset-0 bg-black opacity-50"></div>
-          <div className="relative z-10 px-8 py-16 text-center">
-            <h1 className="text-5xl font-bold text-white mb-6">
-              📱 Video Entrevistas Móviles
-            </h1>
-            <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-              Graba tu video-pitch desde cualquier lugar. IA analiza tu comunicación, 
-              lenguaje corporal y soft skills para encontrar el trabajo perfecto.
-            </p>
-            <div className="flex justify-center space-x-4">
-              <button
-                onClick={videoRecording ? stopVideoRecording : startVideoRecording}
-                className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 ${
-                  videoRecording 
-                    ? 'bg-red-600 hover:bg-red-700 text-white' 
-                    : 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white'
-                }`}
-              >
-                {videoRecording ? '🛑 Detener Grabación' : '🎬 Iniciar Video-Pitch'}
-              </button>
+      <div className="max-w-7xl mx-auto p-6 space-y-12 animate-fade-scale">
+        {/* Premium Hero Section */}
+        <div className="gradient-hero rounded-3xl overflow-hidden shadow-premium relative">
+          <div className="absolute inset-0 pattern-grid opacity-20"></div>
+          <div className="relative z-20 px-8 py-20 lg:py-24">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+              <div className="text-center lg:text-left">
+                <div className="inline-flex items-center px-6 py-3 bg-white bg-opacity-20 rounded-full text-white text-sm font-bold mb-8 glass-card">
+                  <Icons.Sparkles />
+                  <span className="ml-2">Tecnología de Video IA Avanzada</span>
+                </div>
+                <h1 className="text-5xl lg:text-6xl font-black text-white mb-6 leading-tight">
+                  Video Entrevistas
+                  <span className="block text-blue-200 text-4xl lg:text-5xl font-light">
+                    de Nueva Generación
+                  </span>
+                </h1>
+                <p className="text-xl lg:text-2xl text-blue-100 mb-10 leading-relaxed">
+                  Graba tu video-pitch profesional desde cualquier dispositivo. Nuestra IA analiza 
+                  comunicación, lenguaje corporal y soft skills para conectarte con el trabajo perfecto.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                  <button
+                    onClick={videoRecording ? stopVideoRecording : startVideoRecording}
+                    className={`btn-premium group px-8 py-4 text-lg font-bold flex items-center justify-center gap-3 ${
+                      videoRecording 
+                        ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700' 
+                        : ''
+                    }`}
+                  >
+                    {videoRecording ? (
+                      <>
+                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                          <rect x="6" y="6" width="12" height="12" rx="1"/>
+                        </svg>
+                        <span>Detener Grabación</span>
+                      </>
+                    ) : (
+                      <>
+                        <Icons.Video />
+                        <span>Iniciar Video-Pitch</span>
+                        <Icons.ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </button>
+                </div>
+                
+                {/* Trust Badges */}
+                <div className="mt-12 flex items-center justify-center lg:justify-start space-x-8 text-white opacity-90">
+                  <div className="text-center">
+                    <div className="text-xl font-black">HD</div>
+                    <div className="text-xs">Calidad</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-black">IA</div>
+                    <div className="text-xs">Análisis</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-black">24/7</div>
+                    <div className="text-xs">Acceso</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="relative animate-float">
+                <div className="relative z-10">
+                  <img 
+                    src="https://images.pexels.com/photos/8102677/pexels-photo-8102677.jpeg" 
+                    alt="Professional Video Setup" 
+                    className="w-full max-w-lg mx-auto rounded-3xl shadow-glass glass-card p-4"
+                  />
+                </div>
+                
+                {/* Floating Tech Elements */}
+                <div className="absolute -top-6 -left-6 w-24 h-24 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full opacity-20 animate-pulse-premium"></div>
+                <div className="absolute -bottom-6 -right-6 w-20 h-20 bg-gradient-to-br from-purple-400 to-pink-600 rounded-full opacity-20 animate-pulse-premium" style={{animationDelay: '1s'}}></div>
+                <div className="absolute top-12 -right-2 w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full opacity-20 animate-pulse-premium" style={{animationDelay: '2s'}}></div>
+              </div>
             </div>
-          </div>
-          
-          {/* Background Images */}
-          <div className="absolute top-4 right-4 opacity-20">
-            <img 
-              src="https://images.pexels.com/photos/6954220/pexels-photo-6954220.jpeg" 
-              alt="Mobile Interview" 
-              className="w-32 h-32 rounded-full object-cover"
-            />
-          </div>
-          <div className="absolute bottom-4 left-4 opacity-20">
-            <img 
-              src="https://images.pexels.com/photos/7676408/pexels-photo-7676408.jpeg" 
-              alt="Professional Setup" 
-              className="w-24 h-24 rounded-full object-cover"
-            />
           </div>
         </div>
 
