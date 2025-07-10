@@ -390,6 +390,106 @@ async def analyze_candidate_job_match(candidate: Dict, job: Dict) -> MatchResult
             success_projection=75.0
         )
 
+# Initialize pricing plans on startup
+initialize_pricing_plans()
+
+# Authentication endpoints
+@app.post("/api/auth/register")
+async def register_user(user: UserRegister):
+    """Register new user"""
+    # Check if user already exists
+    existing_user = users_collection.find_one({"email": user.email})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Create new user
+    user_data = {
+        "id": str(uuid.uuid4()),
+        "email": user.email,
+        "password_hash": hash_password(user.password),
+        "name": user.name,
+        "role": user.role,
+        "created_at": datetime.utcnow(),
+        "is_active": True,
+        "subscription": None
+    }
+    
+    users_collection.insert_one(user_data)
+    user_data.pop("password_hash")  # Don't return password hash
+    user_data.pop("_id")  # Remove MongoDB ID
+    
+    return {"message": "User registered successfully", "user": user_data}
+
+@app.post("/api/auth/login")
+async def login_user(credentials: UserLogin):
+    """Login user"""
+    user = users_collection.find_one({"email": credentials.email})
+    if not user or not verify_password(credentials.password, user["password_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    if not user.get("is_active", True):
+        raise HTTPException(status_code=403, detail="Account is disabled")
+    
+    # Update last login
+    users_collection.update_one(
+        {"id": user["id"]},
+        {"$set": {"last_login": datetime.utcnow()}}
+    )
+    
+    # Return user data without password
+    user.pop("password_hash")
+    user.pop("_id")
+    
+    return {"message": "Login successful", "user": user}
+
+# Pricing plans endpoints
+@app.get("/api/pricing/plans")
+async def get_pricing_plans():
+    """Get all available pricing plans"""
+    plans = list(plans_collection.find({}, {"_id": 0}))
+    return {"plans": plans}
+
+@app.post("/api/pricing/subscribe")
+async def subscribe_to_plan(subscription: PlanSubscription):
+    """Subscribe user to a pricing plan"""
+    # Verify user exists
+    user = users_collection.find_one({"id": subscription.user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Verify plan exists
+    plan = plans_collection.find_one({"id": subscription.plan_type})
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    
+    # Create subscription record
+    subscription_data = {
+        "id": str(uuid.uuid4()),
+        "user_id": subscription.user_id,
+        "plan_id": subscription.plan_type,
+        "amount": subscription.amount,
+        "payment_method": subscription.payment_method,
+        "status": "active",
+        "created_at": datetime.utcnow(),
+        "expires_at": datetime.utcnow() + timedelta(days=30)  # 30 days subscription
+    }
+    
+    # Update user subscription
+    users_collection.update_one(
+        {"id": subscription.user_id},
+        {"$set": {"subscription": subscription_data}}
+    )
+    
+    return {"message": "Subscription successful", "subscription": subscription_data}
+
+@app.get("/api/users/{user_id}")
+async def get_user_profile(user_id: str):
+    """Get user profile"""
+    user = users_collection.find_one({"id": user_id}, {"_id": 0, "password_hash": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
 # API Endpoints
 @app.get("/api/health")
 async def health_check():
