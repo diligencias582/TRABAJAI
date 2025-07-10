@@ -249,15 +249,33 @@ async def generate_matches(job_id: str, background_tasks: BackgroundTasks):
     
     matches = []
     for candidate in candidates:
-        match_result = await analyze_candidate_job_match(candidate, job)
-        
-        # Save match to database
-        match_data = match_result.dict()
-        match_data['id'] = str(uuid.uuid4())
-        match_data['created_at'] = datetime.utcnow()
-        
-        matches_collection.insert_one(match_data)
-        matches.append(match_data)
+        try:
+            match_result = await analyze_candidate_job_match(candidate, job)
+            
+            # Save match to database
+            match_data = {
+                "id": str(uuid.uuid4()),
+                "candidate_id": match_result.candidate_id,
+                "job_id": match_result.job_id,
+                "overall_score": match_result.overall_score,
+                "skills_match": match_result.skills_match,
+                "culture_match": match_result.culture_match,
+                "salary_match": match_result.salary_match,
+                "ai_analysis": match_result.ai_analysis,
+                "match_reasons": match_result.match_reasons,
+                "gaps_identified": match_result.gaps_identified,
+                "success_projection": match_result.success_projection,
+                "created_at": datetime.utcnow().isoformat()
+            }
+            
+            matches_collection.insert_one(match_data)
+            # Remove the MongoDB _id for response
+            match_data.pop("_id", None)
+            matches.append(match_data)
+            
+        except Exception as e:
+            print(f"Error processing candidate {candidate.get('name', 'unknown')}: {e}")
+            continue
     
     # Sort by overall score
     matches.sort(key=lambda x: x['overall_score'], reverse=True)
