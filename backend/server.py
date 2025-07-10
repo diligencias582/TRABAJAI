@@ -42,6 +42,8 @@ matches_collection = db.matches
 analytics_collection = db.analytics
 interviews_collection = db.interviews
 video_analytics_collection = db.video_analytics
+users_collection = db.users
+plans_collection = db.plans
 
 class JobNiche(str, Enum):
     TECH = "tech"
