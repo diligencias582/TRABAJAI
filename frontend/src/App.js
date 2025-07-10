@@ -1319,6 +1319,223 @@ function App() {
     );
   };
 
+  const PricingPlans = () => {
+    const handleSubscribe = async (plan) => {
+      if (!user) {
+        alert('Debes iniciar sesión para suscribirte');
+        setCurrentView('login');
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/pricing/subscribe`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: user.id,
+            plan_type: plan.id,
+            amount: plan.price,
+            payment_method: 'credit_card'
+          })
+        });
+
+        if (response.ok) {
+          alert(`¡Suscripción exitosa al plan ${plan.name}!`);
+          // Update user data
+          const updatedUser = await fetch(`${API_BASE_URL}/api/users/${user.id}`);
+          const userData = await updatedUser.json();
+          setUser(userData);
+        } else {
+          alert('Error en la suscripción');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error de conexión');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    return (
+      <div className="max-w-7xl mx-auto p-6 space-y-12 animate-fade-scale">
+        {/* Premium Header */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full text-green-600 dark:text-green-400 text-sm font-bold mb-8 border border-green-200 dark:border-green-800">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            </svg>
+            <span>Asesoría Personalizada Premium</span>
+          </div>
+          <h1 className="text-6xl lg:text-7xl font-black text-gradient mb-6">
+            Planes de Asesoría
+          </h1>
+          <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-400 max-w-4xl mx-auto leading-relaxed">
+            Acelera tu carrera profesional con nuestros expertos en reclutamiento. 
+            Coaching personalizado para conseguir el trabajo de tus sueños.
+          </p>
+        </div>
+
+        {/* Pricing Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {pricingPlans.map((plan) => (
+            <div 
+              key={plan.id} 
+              className={`card-premium p-8 relative group hover:scale-105 transition-all duration-500 ${
+                plan.popular ? 'ring-4 ring-blue-500 ring-opacity-50 ai-glow' : ''
+              }`}
+            >
+              {plan.popular && (
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-bold">
+                    MÁS POPULAR
+                  </div>
+                </div>
+              )}
+
+              <div className="text-center mb-8">
+                <div className={`w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center text-3xl font-black text-white ${
+                  plan.id === 'basico' ? 'bg-gradient-to-br from-blue-500 to-blue-600' :
+                  plan.id === 'profesional' ? 'bg-gradient-to-br from-purple-500 to-purple-600' :
+                  'bg-gradient-to-br from-orange-500 to-red-600'
+                }`}>
+                  {plan.id === 'basico' ? '💼' : plan.id === 'profesional' ? '🚀' : '👑'}
+                </div>
+                
+                <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
+                  {plan.name}
+                </h3>
+                
+                <div className="mb-4">
+                  <span className="text-4xl font-black text-gray-900 dark:text-white">
+                    ${plan.price}
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400 ml-2">USD</span>
+                </div>
+                
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  {plan.sessions} sesión{plan.sessions > 1 ? 'es' : ''} de {plan.duration}
+                </div>
+              </div>
+
+              <div className="space-y-4 mb-8">
+                {plan.features.map((feature, index) => (
+                  <div key={index} className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700 dark:text-gray-300 text-sm">{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => handleSubscribe(plan)}
+                disabled={loading}
+                className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 disabled:opacity-50 ${
+                  plan.popular 
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white' 
+                    : 'bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 text-white dark:from-gray-700 dark:to-gray-800 dark:hover:from-gray-600 dark:hover:to-gray-700'
+                }`}
+              >
+                {loading ? 'Procesando...' : 'Seleccionar Plan'}
+              </button>
+
+              {plan.id === 'premium' && (
+                <div className="mt-4 text-center">
+                  <div className="inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-xs font-medium">
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Garantía de satisfacción
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* FAQ Section */}
+        <div className="max-w-4xl mx-auto mt-20">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">
+              Preguntas Frecuentes
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Todo lo que necesitas saber sobre nuestros servicios
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="card-premium p-6">
+              <h4 className="font-bold text-gray-900 dark:text-white mb-3">
+                ¿Qué incluye cada sesión?
+              </h4>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Análisis de CV, simulacros de entrevista, feedback personalizado y estrategias específicas para tu industria.
+              </p>
+            </div>
+
+            <div className="card-premium p-6">
+              <h4 className="font-bold text-gray-900 dark:text-white mb-3">
+                ¿Puedo cambiar de plan?
+              </h4>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Sí, puedes upgradear tu plan en cualquier momento y pagarás solo la diferencia prorrateada.
+              </p>
+            </div>
+
+            <div className="card-premium p-6">
+              <h4 className="font-bold text-gray-900 dark:text-white mb-3">
+                ¿Hay garantía de resultados?
+              </h4>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                El plan Premium incluye garantía de satisfacción. Si no estás satisfecho, te devolvemos tu dinero.
+              </p>
+            </div>
+
+            <div className="card-premium p-6">
+              <h4 className="font-bold text-gray-900 dark:text-white mb-3">
+                ¿Cómo funcionan las sesiones?
+              </h4>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Las sesiones son virtuales via Zoom, con horarios flexibles adaptados a tu zona horaria.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="text-center mt-16">
+          <div className="card-premium p-12 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-800">
+            <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-4">
+              ¿Listo para acelerar tu carrera?
+            </h3>
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+              Únete a los miles de profesionales que han conseguido su trabajo soñado con nuestra ayuda
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button
+                onClick={() => setCurrentView('login')}
+                className="btn-premium px-8 py-4 text-lg font-bold flex items-center gap-3"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span>Comenzar Ahora</span>
+              </button>
+              
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                o contacta a nuestro equipo: <strong>hello@trabajai.com</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const Dashboard = () => {
     if (!analytics) {
       return (
