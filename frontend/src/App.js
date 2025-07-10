@@ -1364,7 +1364,7 @@ function App() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div className="text-4xl font-black text-green-600 dark:text-green-400 mb-2">96%</div>
+              <div className="text-4xl font-black text-green-600 dark:text-green-400 mb-2">{analytics.video_completion_rate}%</div>
               <div className="text-sm font-medium text-green-800 dark:text-green-200">Calidad Audio/Video</div>
               <div className="text-xs text-green-600 dark:text-green-400 mt-2">Excelente calidad</div>
             </div>
