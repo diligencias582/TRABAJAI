@@ -1218,62 +1218,95 @@ function App() {
   };
 
   const Navigation = () => (
-    <nav className="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-8">
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
-              🤖 TRABAJAI
+    <nav className="glass-nav sticky top-0 z-50 shadow-premium">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="flex justify-between items-center h-20">
+          <div className="flex items-center space-x-10">
+            {/* Premium Logo */}
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-2xl font-black text-gradient">TRABAJAI</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">Premium Edition</div>
+              </div>
             </div>
-            <div className="flex space-x-6">
+            
+            {/* Navigation Links */}
+            <div className="hidden lg:flex space-x-2">
               <button
                 onClick={() => setCurrentView('dashboard')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                  currentView === 'dashboard'
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-blue-500'
-                }`}
+                className={`nav-item ${currentView === 'dashboard' ? 'active' : ''}`}
               >
-                📊 Dashboard
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6a2 2 0 01-2 2H10a2 2 0 01-2-2V5z" />
+                </svg>
+                Dashboard
               </button>
               <button
                 onClick={() => setCurrentView('video-interview')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                  currentView === 'video-interview'
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-blue-500'
-                }`}
+                className={`nav-item ${currentView === 'video-interview' ? 'active' : ''}`}
               >
-                📱 Video Interview
+                <Icons.Video className="mr-2" />
+                Video Interview
               </button>
               <button
                 onClick={() => setCurrentView('candidates')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                  currentView === 'candidates'
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-blue-500'
-                }`}
+                className={`nav-item ${currentView === 'candidates' ? 'active' : ''}`}
               >
-                🎯 Candidates
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Candidatos
               </button>
               <button
                 onClick={() => setCurrentView('jobs')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                  currentView === 'jobs'
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-blue-500'
-                }`}
+                className={`nav-item ${currentView === 'jobs' ? 'active' : ''}`}
               >
-                💼 Jobs
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6" />
+                </svg>
+                Empleos
               </button>
             </div>
           </div>
+          
+          {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
+            {/* Status Indicator */}
+            <div className="hidden md:flex items-center space-x-3 px-4 py-2 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium text-green-700 dark:text-green-300">Sistema Activo</span>
+            </div>
+            
+            {/* Dark Mode Toggle */}
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200"
+              className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 group"
+              data-tooltip={darkMode ? "Modo Claro" : "Modo Oscuro"}
             >
-              {darkMode ? '☀️' : '🌙'}
+              {darkMode ? (
+                <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+              )}
+            </button>
+            
+            {/* Quick Action Button */}
+            <button
+              onClick={() => setCurrentView('video-interview')}
+              className="btn-premium px-6 py-3 text-sm font-bold flex items-center gap-2"
+            >
+              <Icons.Video />
+              <span className="hidden sm:inline">Grabar Video</span>
             </button>
           </div>
         </div>
