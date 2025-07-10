@@ -49,6 +49,8 @@ function App() {
   const [videoRecording, setVideoRecording] = useState(false);
   const [recordedVideo, setRecordedVideo] = useState(null);
   const [interviews, setInterviews] = useState([]);
+  const [pricingPlans, setPricingPlans] = useState([]);
+  const [user, setUser] = useState(null);
   const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const [stream, setStream] = useState(null);
