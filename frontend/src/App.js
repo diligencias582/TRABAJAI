@@ -248,13 +248,24 @@ function App() {
           </div>
         </div>
 
-        {/* Video Recording Interface */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              🎥 Estudio de Grabación
-            </h3>
-            <div className="relative bg-gray-900 rounded-xl overflow-hidden aspect-video mb-4">
+        {/* Premium Video Recording Interface */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          <div className="card-premium p-8 ai-glow">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                Estudio de Grabación Premium
+              </h3>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Calidad Profesional HD
+              </div>
+            </div>
+            
+            <div className="video-container mb-6 relative group">
               {videoRecording || stream ? (
                 <video
                   ref={videoRef}
@@ -269,39 +280,86 @@ function App() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="flex items-center justify-center h-full">
+                <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
                   <div className="text-center text-white">
-                    <div className="text-6xl mb-4">📹</div>
-                    <p className="text-lg">Inicia tu grabación para previsualizar</p>
+                    <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <h4 className="text-xl font-bold mb-2">Estudio Listo</h4>
+                    <p className="text-gray-300">Presiona grabar para comenzar tu video-pitch profesional</p>
                   </div>
                 </div>
               )}
               
               {videoRecording && (
-                <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
-                  <div className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></div>
+                <div className="absolute top-6 left-6 recording-indicator">
+                  <div className="recording-dot"></div>
                   REC
                 </div>
               )}
+              
+              {/* Recording Controls Overlay */}
+              <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center space-x-3 bg-black bg-opacity-50 backdrop-blur-sm rounded-full px-6 py-3">
+                  <div className="text-white text-sm font-medium">
+                    {videoRecording ? 'Grabando...' : recordedVideo ? 'Video Completado' : 'Listo para Grabar'}
+                  </div>
+                </div>
+              </div>
             </div>
             
-            <div className="flex space-x-3">
+            <div className="flex space-x-4">
               <button
                 onClick={videoRecording ? stopVideoRecording : startVideoRecording}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                className={`flex-1 py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 ${
                   videoRecording 
-                    ? 'bg-red-600 hover:bg-red-700 text-white' 
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white' 
+                    : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white'
                 }`}
               >
-                {videoRecording ? '⏹️ Parar' : '▶️ Grabar'}
+                {videoRecording ? (
+                  <>
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <rect x="6" y="6" width="12" height="12" rx="1"/>
+                    </svg>
+                    Finalizar
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1M9 10l-2 2m2-2V7a2 2 0 114 0v3m-2 0l2 2" />
+                    </svg>
+                    Comenzar
+                  </>
+                )}
               </button>
               
               {recordedVideo && (
-                <button className="px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-all duration-200">
-                  📤 Subir Video
+                <button className="px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-300 flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  Subir Video
                 </button>
               )}
+            </div>
+            
+            {/* Technical Info */}
+            <div className="mt-6 grid grid-cols-3 gap-4 text-center">
+              <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                <div className="text-sm font-bold text-gray-900 dark:text-white">1080p</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">Resolución</div>
+              </div>
+              <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                <div className="text-sm font-bold text-gray-900 dark:text-white">60fps</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">Frame Rate</div>
+              </div>
+              <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                <div className="text-sm font-bold text-gray-900 dark:text-white">AAC</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">Audio</div>
+              </div>
             </div>
           </div>
 
