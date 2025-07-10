@@ -572,7 +572,7 @@ function App() {
         });
 
         if (response.ok) {
-          alert('Candidate created successfully!');
+          alert('¡Candidato creado exitosamente!');
           setFormData({
             name: '', email: '', phone: '', skills: '', experience_level: 'junior',
             salary_expectation: '', location: '', niche: 'tech', bio: '',
@@ -583,32 +583,75 @@ function App() {
         }
       } catch (error) {
         console.error('Error creating candidate:', error);
-        alert('Error creating candidate');
+        alert('Error al crear candidato');
       } finally {
         setLoading(false);
       }
     };
 
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        {/* Video Section */}
+      <div className="max-w-5xl mx-auto p-6 space-y-8 animate-fade-scale">
+        {/* Premium Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full text-blue-600 dark:text-blue-400 text-sm font-bold mb-6 border border-blue-200 dark:border-blue-800">
+            <Icons.Star />
+            <span className="ml-2">Registro Premium de Candidatos</span>
+          </div>
+          <h1 className="text-5xl font-black text-gradient mb-4">
+            Únete a la Elite Profesional
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            Completa tu perfil premium y deja que nuestra IA te conecte con las mejores oportunidades profesionales
+          </p>
+        </div>
+
+        {/* Video Section Premium */}
         {recordedVideo && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 mb-6">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              🎬 Tu Video-Pitch
-            </h3>
-            <video
-              src={recordedVideo}
-              controls
-              className="w-full max-w-md mx-auto rounded-lg"
-            />
-            <div className="text-center mt-4">
-              <button
-                onClick={() => setCurrentView('video-interview')}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"
-              >
-                🎥 Grabar Nuevo Video
-              </button>
+          <div className="card-premium p-8 mb-8 ai-glow">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                Tu Video-Pitch Premium
+              </h3>
+              <div className="success-state">
+                <Icons.CheckCircle />
+                <span>Video Completado</span>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+              <div className="video-container">
+                <video
+                  src={recordedVideo}
+                  controls
+                  className="w-full h-full object-cover"
+                  poster="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM2NjdlZWEiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM3NjRiYTIiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+"
+                />
+              </div>
+              
+              <div className="space-y-4">
+                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
+                  <div className="flex items-center mb-2">
+                    <Icons.CheckCircle className="text-green-600 mr-2" />
+                    <span className="font-bold text-green-800 dark:text-green-200">Video Analizado por IA</span>
+                  </div>
+                  <p className="text-sm text-green-700 dark:text-green-300">
+                    Tu video ha sido procesado y analizado. Los candidatos con video tienen 5x más probabilidades de ser contactados.
+                  </p>
+                </div>
+                
+                <button
+                  onClick={() => setCurrentView('video-interview')}
+                  className="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2"
+                >
+                  <Icons.Video />
+                  Grabar Nuevo Video
+                </button>
+              </div>
             </div>
           </div>
         )}
