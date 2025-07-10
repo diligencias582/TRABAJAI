@@ -154,6 +154,78 @@ class MatchResult(BaseModel):
     gaps_identified: List[str]
     success_projection: float
 
+# Utility functions for authentication
+def hash_password(password: str) -> str:
+    """Hash password using SHA-256"""
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def verify_password(password: str, hashed: str) -> bool:
+    """Verify password against hash"""
+    return hash_password(password) == hashed
+
+# Initialize pricing plans
+def initialize_pricing_plans():
+    """Initialize pricing plans in database"""
+    plans = [
+        {
+            "id": "basico",
+            "name": "Asesoría Básica",
+            "price": 10.00,
+            "currency": "USD",
+            "features": [
+                "Revisión de CV",
+                "Consejos básicos de entrevista",
+                "1 sesión de 30 minutos",
+                "Soporte por email"
+            ],
+            "duration": "30 minutos",
+            "sessions": 1,
+            "popular": False
+        },
+        {
+            "id": "profesional", 
+            "name": "Asesoría Profesional",
+            "price": 20.00,
+            "currency": "USD",
+            "features": [
+                "Revisión completa de CV",
+                "Simulacro de entrevista",
+                "Análisis de video personalizado",
+                "2 sesiones de 45 minutos",
+                "Soporte prioritario",
+                "Estrategias de búsqueda de empleo"
+            ],
+            "duration": "45 minutos",
+            "sessions": 2,
+            "popular": True
+        },
+        {
+            "id": "premium",
+            "name": "Asesoría Premium",
+            "price": 50.00,
+            "currency": "USD", 
+            "features": [
+                "Todo lo de Profesional",
+                "Coaching de carrera personalizado",
+                "Optimización de LinkedIn",
+                "5 sesiones de 60 minutos",
+                "Soporte 24/7",
+                "Seguimiento por 30 días",
+                "Red de contactos exclusiva",
+                "Garantía de satisfacción"
+            ],
+            "duration": "60 minutos",
+            "sessions": 5,
+            "popular": False
+        }
+    ]
+    
+    for plan in plans:
+        existing = plans_collection.find_one({"id": plan["id"]})
+        if not existing:
+            plan["created_at"] = datetime.utcnow()
+            plans_collection.insert_one(plan)
+
 # AI Video Analysis System
 async def analyze_video_interview(video_data: str, candidate_info: Dict) -> VideoAnalysis:
     """AI-powered video analysis using Google Gemini"""
