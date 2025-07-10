@@ -656,129 +656,233 @@ function App() {
           </div>
         )}
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-            🎯 Register Candidate
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Full Name
+        <div className="card-premium p-10">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4">
+              Información Personal & Profesional
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              Completa tu perfil premium para acceder a oportunidades exclusivas
+            </p>
+          </div>
+          
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Personal Information Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                  Nombre Completo *
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-input focus-ring w-full dark:text-white"
+                  placeholder="Ej: María González García"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Email
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                  Correo Electrónico *
                 </label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-input focus-ring w-full dark:text-white"
+                  placeholder="maria@ejemplo.com"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Phone
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                  Teléfono *
                 </label>
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-input focus-ring w-full dark:text-white"
+                  placeholder="+34 600 123 456"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Salary Expectation ($)
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                  Ubicación *
+                </label>
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => setFormData({...formData, location: e.target.value})}
+                  className="form-input focus-ring w-full dark:text-white"
+                  placeholder="Madrid, España"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                  Expectativa Salarial (€) *
                 </label>
                 <input
                   type="number"
                   value={formData.salary_expectation}
                   onChange={(e) => setFormData({...formData, salary_expectation: e.target.value})}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-input focus-ring w-full dark:text-white"
+                  placeholder="45000"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Experience Level
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                  Nivel de Experiencia *
                 </label>
                 <select
                   value={formData.experience_level}
                   onChange={(e) => setFormData({...formData, experience_level: e.target.value})}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-input focus-ring w-full dark:text-white"
                 >
-                  <option value="entry">Entry Level</option>
+                  <option value="entry">Nivel de Entrada</option>
                   <option value="junior">Junior</option>
-                  <option value="middle">Middle</option>
+                  <option value="middle">Intermedio</option>
                   <option value="senior">Senior</option>
                   <option value="lead">Lead</option>
-                  <option value="executive">Executive</option>
+                  <option value="executive">Ejecutivo</option>
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Niche
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                  Sector Profesional *
                 </label>
                 <select
                   value={formData.niche}
                   onChange={(e) => setFormData({...formData, niche: e.target.value})}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-input focus-ring w-full dark:text-white"
                 >
                   {niches.map(niche => (
-                    <option key={niche.value} value={niche.value}>{niche.label}</option>
+                    <option key={niche.value} value={niche.value}>
+                      {niche.value === 'tech' ? '💻 Tecnología' : 
+                       niche.value === 'creative' ? '🎨 Creativos' :
+                       niche.value === 'health' ? '⚕️ Salud' :
+                       niche.value === 'finance' ? '💰 Finanzas' :
+                       niche.value === 'marketing' ? '📢 Marketing' :
+                       niche.value === 'sales' ? '📈 Ventas' :
+                       niche.value === 'operations' ? '⚙️ Operaciones' :
+                       '📚 Educación'}
+                    </option>
                   ))}
                 </select>
               </div>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                  Idiomas
+                </label>
+                <input
+                  type="text"
+                  value={formData.languages}
+                  onChange={(e) => setFormData({...formData, languages: e.target.value})}
+                  className="form-input focus-ring w-full dark:text-white"
+                  placeholder="Español (Nativo), Inglés (C1), Francés (B2)"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Skills (comma-separated)
-              </label>
-              <input
-                type="text"
-                value={formData.skills}
-                onChange={(e) => setFormData({...formData, skills: e.target.value})}
-                placeholder="React, Node.js, Python, AWS"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
+            
+            {/* Skills Section */}
+            <div className="space-y-6">
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-8">
+                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                  </div>
+                  Habilidades y Competencias
+                </h3>
+              </div>
+              
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                    Habilidades Técnicas * (separadas por comas)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.skills}
+                    onChange={(e) => setFormData({...formData, skills: e.target.value})}
+                    placeholder="React, Node.js, Python, AWS, Docker, Kubernetes"
+                    className="form-input focus-ring w-full dark:text-white"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    💡 Incluye tecnologías, herramientas y frameworks relevantes para tu área
+                  </p>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                    Soft Skills (separadas por comas)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.soft_skills}
+                    onChange={(e) => setFormData({...formData, soft_skills: e.target.value})}
+                    placeholder="Liderazgo, Comunicación, Resolución de Problemas, Trabajo en Equipo"
+                    className="form-input focus-ring w-full dark:text-white"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                    Preferencias de Cultura Empresarial (separadas por comas)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.culture_preferences}
+                    onChange={(e) => setFormData({...formData, culture_preferences: e.target.value})}
+                    placeholder="Trabajo remoto, Innovación, Flexibilidad, Crecimiento profesional"
+                    className="form-input focus-ring w-full dark:text-white"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Soft Skills (comma-separated)
-              </label>
-              <input
-                type="text"
-                value={formData.soft_skills}
-                onChange={(e) => setFormData({...formData, soft_skills: e.target.value})}
-                placeholder="Leadership, Communication, Problem Solving"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Bio
-              </label>
-              <textarea
-                value={formData.bio}
-                onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                rows={4}
-                placeholder="Tell us about yourself..."
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
+            
+            {/* Bio Section */}
+            <div className="space-y-4">
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-8">
+                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  Sobre Ti
+                </h3>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                  Biografía Profesional *
+                </label>
+                <textarea
+                  value={formData.bio}
+                  onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                  rows={5}
+                  placeholder="Cuéntanos sobre tu experiencia, logros y lo que te apasiona de tu profesión. ¿Qué te hace único como profesional?"
+                  className="form-input focus-ring w-full dark:text-white resize-none"
+                  required
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                  💡 Una biografía atractiva aumenta tus posibilidades de ser contactado
+                </p>
+              </div>
             </div>
 
             {!recordedVideo && (
