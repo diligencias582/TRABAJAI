@@ -885,34 +885,86 @@ function App() {
               </div>
             </div>
 
+            {/* Video Pitch CTA */}
             {!recordedVideo && (
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
-                <div className="text-center">
-                  <div className="text-4xl mb-4">🎬</div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    ¿Quieres destacar? ¡Graba tu Video-Pitch!
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    Los candidatos con video tienen 5x más probabilidades de ser contactados
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setCurrentView('video-interview')}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-all duration-200"
-                  >
-                    🎥 Grabar Video-Pitch
-                  </button>
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-8">
+                <div className="card-premium p-8 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-800 ai-glow">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4">
+                      ¿Listo para Destacar?
+                    </h3>
+                    <p className="text-gray-700 dark:text-gray-300 mb-6 max-w-md mx-auto">
+                      Los candidatos con video-pitch tienen <strong>5x más probabilidades</strong> de ser contactados por empresas premium.
+                    </p>
+                    
+                    <div className="grid grid-cols-3 gap-4 mb-8 text-center">
+                      <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+                        <div className="text-2xl font-black text-blue-600 dark:text-blue-400">5x</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Más Contactos</div>
+                      </div>
+                      <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+                        <div className="text-2xl font-black text-green-600 dark:text-green-400">AI</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Análisis</div>
+                      </div>
+                      <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+                        <div className="text-2xl font-black text-purple-600 dark:text-purple-400">HD</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Calidad</div>
+                      </div>
+                    </div>
+                    
+                    <button
+                      type="button"
+                      onClick={() => setCurrentView('video-interview')}
+                      className="btn-premium px-8 py-4 text-lg font-bold flex items-center justify-center gap-3 mx-auto"
+                    >
+                      <Icons.Video />
+                      <span>Grabar Video-Pitch Premium</span>
+                      <Icons.ArrowRight />
+                    </button>
+                    
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
+                      Puedes completar el registro sin video, pero recomendamos grabarlo para mejores resultados
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50"
-            >
-              {loading ? 'Creating...' : '🚀 Create Candidate'}
-            </button>
+            {/* Submit Button */}
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-8">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full btn-premium py-5 text-xl font-black flex items-center justify-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Procesando...</span>
+                  </>
+                ) : (
+                  <>
+                    <Icons.Sparkles />
+                    <span>Unirse a la Elite Profesional</span>
+                    <Icons.ArrowRight />
+                  </>
+                )}
+              </button>
+              
+              <div className="mt-6 text-center">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Al registrarte, aceptas nuestros{' '}
+                  <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">términos y condiciones</a>
+                  {' '}y{' '}
+                  <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">política de privacidad</a>
+                </p>
+              </div>
+            </div>
           </form>
         </div>
       </div>
