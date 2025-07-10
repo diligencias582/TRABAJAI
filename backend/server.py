@@ -25,7 +25,7 @@ app.add_middleware(
 # Configure Google Gemini
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', 'AIzaSyDFjNriW8ZeH0WkGn1B3EfU7yLqi3mM0Hs')
 genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-2.5-flash')  # Using the faster model for better performance
 
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
