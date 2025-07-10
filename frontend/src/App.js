@@ -363,42 +363,99 @@ function App() {
             </div>
           </div>
 
-          {/* Interview Tips */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              💡 Consejos para tu Video-Pitch
-            </h3>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-sm">1</div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">Iluminación Natural</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Usa luz natural o un ring light para mejor calidad</p>
+          {/* Premium Interview Tips */}
+          <div className="card-premium p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                Consejos de Expertos
+              </h3>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Recomendado por IA
+              </div>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="group p-5 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl border border-blue-200 dark:border-blue-800 hover:scale-105 transition-all duration-300">
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+                    1
+                  </div>
+                  <div>
+                    <h4 className="font-black text-gray-900 dark:text-white mb-2">Iluminación Profesional</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                      Utiliza luz natural frente a una ventana o un ring light. Evita luces por detrás que creen sombras en tu rostro.
+                    </p>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 font-bold text-sm">2</div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">Fondo Profesional</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Fondo limpio y sin distracciones</p>
+              <div className="group p-5 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-green-900/20 dark:via-emerald-900/20 dark:to-teal-900/20 rounded-2xl border border-green-200 dark:border-green-800 hover:scale-105 transition-all duration-300">
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center text-white font-black text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+                    2
+                  </div>
+                  <div>
+                    <h4 className="font-black text-gray-900 dark:text-white mb-2">Fondo Limpio & Profesional</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                      Elige un fondo neutro sin distracciones. Una pared lisa o un espacio organizado proyecta profesionalismo.
+                    </p>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold text-sm">3</div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">Audio Claro</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Habla con claridad y evita ruidos de fondo</p>
+              <div className="group p-5 bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 dark:from-purple-900/20 dark:via-pink-900/20 dark:to-rose-900/20 rounded-2xl border border-purple-200 dark:border-purple-800 hover:scale-105 transition-all duration-300">
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-white font-black text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+                    3
+                  </div>
+                  <div>
+                    <h4 className="font-black text-gray-900 dark:text-white mb-2">Audio Cristalino</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                      Graba en un ambiente silencioso. Habla clara y pausadamente. Usa auriculares con micrófono si es posible.
+                    </p>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center text-orange-600 dark:text-orange-400 font-bold text-sm">4</div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">Duración Ideal</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Entre 60-90 segundos para mantener atención</p>
+              <div className="group p-5 bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 dark:from-orange-900/20 dark:via-amber-900/20 dark:to-yellow-900/20 rounded-2xl border border-orange-200 dark:border-orange-800 hover:scale-105 transition-all duration-300">
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center text-white font-black text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+                    4
+                  </div>
+                  <div>
+                    <h4 className="font-black text-gray-900 dark:text-white mb-2">Duración Óptima</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                      60-90 segundos es ideal. Sé conciso, directo y muestra tu personalidad auténtica.
+                    </p>
+                  </div>
                 </div>
+              </div>
+            </div>
+            
+            {/* AI Score Prediction */}
+            <div className="mt-8 p-6 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-2xl border border-indigo-200 dark:border-indigo-800">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-4">
+                  <Icons.Sparkles className="text-white" />
+                </div>
+                <div>
+                  <div className="font-black text-gray-900 dark:text-white">Predicción de Puntuación IA</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Siguiendo estos consejos</div>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style={{width: '92%'}}></div>
+                </div>
+                <span className="font-black text-2xl text-green-600 dark:text-green-400">92%</span>
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                Puntuación esperada con buenas prácticas aplicadas
               </div>
             </div>
           </div>
