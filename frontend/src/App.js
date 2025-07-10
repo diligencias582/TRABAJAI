@@ -547,6 +547,160 @@ function App() {
     );
   };
 
+  const LoginForm = () => {
+    const [isLogin, setIsLogin] = useState(true);
+    const [formData, setFormData] = useState({
+      email: '',
+      password: '',
+      name: '',
+      role: 'candidate'
+    });
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      setLoading(true);
+      try {
+        const endpoint = isLogin ? 'login' : 'register';
+        const payload = isLogin ? 
+          { email: formData.email, password: formData.password } : 
+          formData;
+
+        const response = await fetch(`${API_BASE_URL}/api/auth/${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          setUser(data.user);
+          alert(isLogin ? '¡Login exitoso!' : '¡Registro exitoso!');
+          setCurrentView('dashboard');
+        } else {
+          alert(data.detail || 'Error en la autenticación');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error de conexión');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    return (
+      <div className="max-w-lg mx-auto p-6 space-y-8 animate-fade-scale">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full text-blue-600 dark:text-blue-400 text-sm font-bold mb-6 border border-blue-200 dark:border-blue-800">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span>Acceso Premium</span>
+          </div>
+          <h1 className="text-4xl font-black text-gradient mb-4">
+            {isLogin ? 'Iniciar Sesión' : 'Registro Premium'}
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-400">
+            {isLogin ? 'Accede a tu cuenta premium' : 'Únete a la elite profesional'}
+          </p>
+        </div>
+
+        <div className="card-premium p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                  Nombre Completo
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  className="form-input focus-ring w-full dark:text-white"
+                  placeholder="Tu nombre completo"
+                  required
+                />
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                Correo Electrónico
+              </label>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                className="form-input focus-ring w-full dark:text-white"
+                placeholder="tu@email.com"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                Contraseña
+              </label>
+              <input
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                className="form-input focus-ring w-full dark:text-white"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                  Tipo de Usuario
+                </label>
+                <select
+                  value={formData.role}
+                  onChange={(e) => setFormData({...formData, role: e.target.value})}
+                  className="form-input focus-ring w-full dark:text-white"
+                >
+                  <option value="candidate">Candidato</option>
+                  <option value="recruiter">Reclutador</option>
+                </select>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full btn-premium py-4 text-lg font-bold flex items-center justify-center gap-3 disabled:opacity-50"
+            >
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Procesando...</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                  </svg>
+                  <span>{isLogin ? 'Iniciar Sesión' : 'Registrarse'}</span>
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              {isLogin ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const CandidateForm = () => {
     const [formData, setFormData] = useState({
       name: '',
