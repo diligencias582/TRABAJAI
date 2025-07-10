@@ -126,6 +126,22 @@ class VideoAnalysis(BaseModel):
     ai_feedback: str
     transcript: Optional[str] = None
 
+class UserRegister(BaseModel):
+    email: str
+    password: str
+    name: str
+    role: UserRole = UserRole.CANDIDATE
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+class PlanSubscription(BaseModel):
+    user_id: str
+    plan_type: PlanType
+    amount: float
+    payment_method: str = "credit_card"
+
 class MatchResult(BaseModel):
     candidate_id: str
     job_id: str
