@@ -69,6 +69,16 @@ class InterviewStatus(str, Enum):
     COMPLETED = "completed"
     CANCELLED = "cancelled"
 
+class PlanType(str, Enum):
+    BASICO = "basico"
+    PROFESIONAL = "profesional"
+    PREMIUM = "premium"
+
+class UserRole(str, Enum):
+    CANDIDATE = "candidate"
+    RECRUITER = "recruiter"
+    ADMIN = "admin"
+
 class CandidateCreate(BaseModel):
     name: str
     email: str
