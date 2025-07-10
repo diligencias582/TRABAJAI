@@ -295,14 +295,25 @@ async def health_check():
 
 @app.post("/api/candidates")
 async def create_candidate(candidate: CandidateCreate):
+    # Generate unique candidate number starting from 1950
+    candidate_count = candidates_collection.count_documents({})
+    candidate_number = 1950 + candidate_count
+    
     candidate_data = candidate.dict()
     candidate_data['id'] = str(uuid.uuid4())
+    candidate_data['candidate_number'] = candidate_number
     candidate_data['created_at'] = datetime.utcnow()
     candidate_data['updated_at'] = datetime.utcnow()
     candidate_data['video_analyzed'] = False
+    candidate_data['status'] = 'active'  # active, inactive, interview_scheduled
+    candidate_data['application_stage'] = 'registered'  # registered, video_submitted, under_review, matched
     
     candidates_collection.insert_one(candidate_data)
-    return {"message": "Candidate created", "candidate_id": candidate_data['id']}
+    return {
+        "message": "Candidate created successfully", 
+        "candidate_id": candidate_data['id'],
+        "candidate_number": candidate_number
+    }
 
 @app.get("/api/candidates")
 async def get_candidates():
