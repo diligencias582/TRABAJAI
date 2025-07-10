@@ -1328,6 +1328,39 @@ function App() {
           </div>
         </div>
 
+        {/* Additional Premium Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12">
+          <div className="card-premium p-6 bg-gradient-to-br from-cyan-500 to-blue-600 text-white text-center hover:scale-105 transition-all duration-300">
+            <div className="text-3xl font-black mb-2">47</div>
+            <div className="text-sm font-medium opacity-90">Entrevistas Hoy</div>
+          </div>
+          
+          <div className="card-premium p-6 bg-gradient-to-br from-emerald-500 to-green-600 text-white text-center hover:scale-105 transition-all duration-300">
+            <div className="text-3xl font-black mb-2">312</div>
+            <div className="text-sm font-medium opacity-90">Aplicaciones Nuevas</div>
+          </div>
+          
+          <div className="card-premium p-6 bg-gradient-to-br from-violet-500 to-purple-600 text-white text-center hover:scale-105 transition-all duration-300">
+            <div className="text-3xl font-black mb-2">89</div>
+            <div className="text-sm font-medium opacity-90">Empresas Activas</div>
+          </div>
+          
+          <div className="card-premium p-6 bg-gradient-to-br from-pink-500 to-rose-600 text-white text-center hover:scale-105 transition-all duration-300">
+            <div className="text-3xl font-black mb-2">156</div>
+            <div className="text-sm font-medium opacity-90">Matches Hoy</div>
+          </div>
+          
+          <div className="card-premium p-6 bg-gradient-to-br from-amber-500 to-orange-600 text-white text-center hover:scale-105 transition-all duration-300">
+            <div className="text-3xl font-black mb-2">78%</div>
+            <div className="text-sm font-medium opacity-90">Tasa Respuesta</div>
+          </div>
+          
+          <div className="card-premium p-6 bg-gradient-to-br from-teal-500 to-cyan-600 text-white text-center hover:scale-105 transition-all duration-300">
+            <div className="text-3xl font-black mb-2">2.1k</div>
+            <div className="text-sm font-medium opacity-90">Perfiles Visitados</div>
+          </div>
+        </div>
+
         {/* Premium Video Analytics */}
         <div className="card-premium p-10 ai-glow">
           <div className="flex items-center justify-between mb-8">
