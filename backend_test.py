@@ -391,7 +391,9 @@ def main():
         tester.test_get_job,
         tester.test_generate_matches,
         tester.test_get_job_matches,
-        tester.test_get_dashboard_analytics
+        tester.test_get_dashboard_analytics,
+        tester.test_get_video_analytics,
+        tester.test_sector_distribution
     ]
     
     for test in tests:
