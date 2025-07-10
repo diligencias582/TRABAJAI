@@ -534,49 +534,27 @@ async def get_dashboard_analytics():
 
 @app.get("/api/analytics/video")
 async def get_video_analytics():
-    """Get video-specific analytics"""
-    total_videos = video_analytics_collection.count_documents({})
-    
-    if total_videos == 0:
-        return {
-            "total_videos": 0,
-            "avg_communication_score": 0,
-            "avg_confidence_score": 0,
-            "avg_professionalism_score": 0,
-            "avg_energy_level": 0
-        }
-    
-    # Get average scores
-    pipeline = [
-        {
-            "$group": {
-                "_id": None,
-                "avg_communication": {"$avg": "$communication_score"},
-                "avg_confidence": {"$avg": "$confidence_score"},
-                "avg_professionalism": {"$avg": "$professionalism_score"},
-                "avg_energy": {"$avg": "$energy_level"}
-            }
-        }
-    ]
-    
-    result = list(video_analytics_collection.aggregate(pipeline))
-    
-    if result:
-        stats = result[0]
-        return {
-            "total_videos": total_videos,
-            "avg_communication_score": round(stats["avg_communication"], 1),
-            "avg_confidence_score": round(stats["avg_confidence"], 1),
-            "avg_professionalism_score": round(stats["avg_professionalism"], 1),
-            "avg_energy_level": round(stats["avg_energy"], 1)
-        }
+    """Get video-specific analytics with demo numbers"""
+    # Demo numbers for video analytics
+    total_videos = 1289
     
     return {
         "total_videos": total_videos,
-        "avg_communication_score": 80.0,
-        "avg_confidence_score": 75.0,
-        "avg_professionalism_score": 85.0,
-        "avg_energy_level": 78.0
+        "avg_communication_score": 87.3,
+        "avg_confidence_score": 82.1,
+        "avg_professionalism_score": 91.8,
+        "avg_energy_level": 78.5,
+        "video_duration_avg": 1.8,  # minutes
+        "interview_completion_rate": 94.2,
+        "mobile_recordings": 892,  # 69% mobile
+        "desktop_recordings": 397,  # 31% desktop
+        "top_skills_identified": [
+            "Comunicación Efectiva",
+            "Liderazgo",
+            "Resolución de Problemas",
+            "Trabajo en Equipo",
+            "Creatividad"
+        ]
     }
 
 @app.get("/api/niches")
