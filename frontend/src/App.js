@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
@@ -12,11 +12,18 @@ function App() {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(false);
   const [niches, setNiches] = useState([]);
+  const [videoRecording, setVideoRecording] = useState(false);
+  const [recordedVideo, setRecordedVideo] = useState(null);
+  const [interviews, setInterviews] = useState([]);
+  const videoRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const [stream, setStream] = useState(null);
 
   // Load data on mount
   useEffect(() => {
     loadDashboardData();
     loadNiches();
+    loadInterviews();
   }, []);
 
   const loadDashboardData = async () => {
@@ -52,6 +59,60 @@ function App() {
     }
   };
 
+  const loadInterviews = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/interviews`);
+      const data = await response.json();
+      setInterviews(data);
+    } catch (error) {
+      console.error('Error loading interviews:', error);
+    }
+  };
+
+  const startVideoRecording = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: "user" }, 
+        audio: true 
+      });
+      
+      setStream(mediaStream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+      }
+      
+      const mediaRecorder = new MediaRecorder(mediaStream);
+      mediaRecorderRef.current = mediaRecorder;
+      
+      const chunks = [];
+      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+      
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        setRecordedVideo(url);
+      };
+      
+      mediaRecorder.start();
+      setVideoRecording(true);
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      alert('Error al acceder a la cámara. Por favor, permite el acceso.');
+    }
+  };
+
+  const stopVideoRecording = () => {
+    if (mediaRecorderRef.current && videoRecording) {
+      mediaRecorderRef.current.stop();
+      setVideoRecording(false);
+      
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        setStream(null);
+      }
+    }
+  };
+
   const generateMatches = async (jobId) => {
     setLoading(true);
     try {
@@ -69,6 +130,222 @@ function App() {
     }
   };
 
+  const VideoInterviewModule = () => {
+    return (
+      <div className="max-w-6xl mx-auto p-6">
+        {/* Hero Section */}
+        <div className="relative bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 rounded-3xl overflow-hidden mb-8">
+          <div className="absolute inset-0 bg-black opacity-50"></div>
+          <div className="relative z-10 px-8 py-16 text-center">
+            <h1 className="text-5xl font-bold text-white mb-6">
+              📱 Video Entrevistas Móviles
+            </h1>
+            <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+              Graba tu video-pitch desde cualquier lugar. IA analiza tu comunicación, 
+              lenguaje corporal y soft skills para encontrar el trabajo perfecto.
+            </p>
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={videoRecording ? stopVideoRecording : startVideoRecording}
+                className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 ${
+                  videoRecording 
+                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                    : 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white'
+                }`}
+              >
+                {videoRecording ? '🛑 Detener Grabación' : '🎬 Iniciar Video-Pitch'}
+              </button>
+            </div>
+          </div>
+          
+          {/* Background Images */}
+          <div className="absolute top-4 right-4 opacity-20">
+            <img 
+              src="https://images.pexels.com/photos/6954220/pexels-photo-6954220.jpeg" 
+              alt="Mobile Interview" 
+              className="w-32 h-32 rounded-full object-cover"
+            />
+          </div>
+          <div className="absolute bottom-4 left-4 opacity-20">
+            <img 
+              src="https://images.pexels.com/photos/7676408/pexels-photo-7676408.jpeg" 
+              alt="Professional Setup" 
+              className="w-24 h-24 rounded-full object-cover"
+            />
+          </div>
+        </div>
+
+        {/* Video Recording Interface */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              🎥 Estudio de Grabación
+            </h3>
+            <div className="relative bg-gray-900 rounded-xl overflow-hidden aspect-video mb-4">
+              {videoRecording || stream ? (
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  muted
+                  className="w-full h-full object-cover"
+                />
+              ) : recordedVideo ? (
+                <video
+                  src={recordedVideo}
+                  controls
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center text-white">
+                    <div className="text-6xl mb-4">📹</div>
+                    <p className="text-lg">Inicia tu grabación para previsualizar</p>
+                  </div>
+                </div>
+              )}
+              
+              {videoRecording && (
+                <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                  <div className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></div>
+                  REC
+                </div>
+              )}
+            </div>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={videoRecording ? stopVideoRecording : startVideoRecording}
+                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                  videoRecording 
+                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }`}
+              >
+                {videoRecording ? '⏹️ Parar' : '▶️ Grabar'}
+              </button>
+              
+              {recordedVideo && (
+                <button className="px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-all duration-200">
+                  📤 Subir Video
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Interview Tips */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              💡 Consejos para tu Video-Pitch
+            </h3>
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-sm">1</div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">Iluminación Natural</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Usa luz natural o un ring light para mejor calidad</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 font-bold text-sm">2</div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">Fondo Profesional</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Fondo limpio y sin distracciones</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold text-sm">3</div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">Audio Claro</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Habla con claridad y evita ruidos de fondo</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center text-orange-600 dark:text-orange-400 font-bold text-sm">4</div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">Duración Ideal</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Entre 60-90 segundos para mantener atención</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Interview Questions */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 mb-8">
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            🎯 Preguntas Sugeridas por IA
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
+              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-3">Para Desarrolladores</h4>
+              <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+                <li>• "Cuéntanos sobre tu proyecto más desafiante"</li>
+                <li>• "¿Cómo te mantienes actualizado con nuevas tecnologías?"</li>
+                <li>• "Describe tu proceso de debugging"</li>
+              </ul>
+            </div>
+            
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
+              <h4 className="font-semibold text-green-900 dark:text-green-100 mb-3">Para Creativos</h4>
+              <ul className="space-y-2 text-sm text-green-800 dark:text-green-200">
+                <li>• "Muéstranos tu proceso creativo"</li>
+                <li>• "¿Cómo manejas la crítica constructiva?"</li>
+                <li>• "Describe un proyecto del que te sientes orgulloso"</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Features Showcase */}
+        <div className="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 rounded-2xl p-8">
+          <div className="text-center mb-8">
+            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              📱 Características Móviles Avanzadas
+            </h3>
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              Graba desde cualquier lugar con tecnología de vanguardia
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">🎥</span>
+              </div>
+              <h4 className="font-bold text-gray-900 dark:text-white mb-2">Grabación HD</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Calidad profesional desde tu smartphone con estabilización automática
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">🤖</span>
+              </div>
+              <h4 className="font-bold text-gray-900 dark:text-white mb-2">Análisis IA</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Evaluación automática de lenguaje corporal y comunicación
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">☁️</span>
+              </div>
+              <h4 className="font-bold text-gray-900 dark:text-white mb-2">Sync Instantáneo</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Sincronización automática con tu perfil y matches en tiempo real
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const CandidateForm = () => {
     const [formData, setFormData] = useState({
       name: '',
@@ -82,7 +359,8 @@ function App() {
       bio: '',
       soft_skills: '',
       languages: '',
-      culture_preferences: ''
+      culture_preferences: '',
+      video_pitch_url: recordedVideo || ''
     });
 
     const handleSubmit = async (e) => {
@@ -95,7 +373,8 @@ function App() {
           soft_skills: formData.soft_skills.split(',').map(s => s.trim()),
           languages: formData.languages.split(',').map(s => s.trim()),
           culture_preferences: formData.culture_preferences.split(',').map(s => s.trim()),
-          salary_expectation: parseFloat(formData.salary_expectation)
+          salary_expectation: parseFloat(formData.salary_expectation),
+          video_pitch_url: recordedVideo || ''
         };
 
         const response = await fetch(`${API_BASE_URL}/api/candidates`, {
@@ -109,8 +388,9 @@ function App() {
           setFormData({
             name: '', email: '', phone: '', skills: '', experience_level: 'junior',
             salary_expectation: '', location: '', niche: 'tech', bio: '',
-            soft_skills: '', languages: '', culture_preferences: ''
+            soft_skills: '', languages: '', culture_preferences: '', video_pitch_url: ''
           });
+          setRecordedVideo(null);
           loadDashboardData();
         }
       } catch (error) {
@@ -123,6 +403,28 @@ function App() {
 
     return (
       <div className="max-w-4xl mx-auto p-6">
+        {/* Video Section */}
+        {recordedVideo && (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 mb-6">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+              🎬 Tu Video-Pitch
+            </h3>
+            <video
+              src={recordedVideo}
+              controls
+              className="w-full max-w-md mx-auto rounded-lg"
+            />
+            <div className="text-center mt-4">
+              <button
+                onClick={() => setCurrentView('video-interview')}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"
+              >
+                🎥 Grabar Nuevo Video
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
             🎯 Register Candidate
@@ -247,6 +549,28 @@ function App() {
                 required
               />
             </div>
+
+            {!recordedVideo && (
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
+                <div className="text-center">
+                  <div className="text-4xl mb-4">🎬</div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    ¿Quieres destacar? ¡Graba tu Video-Pitch!
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    Los candidatos con video tienen 5x más probabilidades de ser contactados
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setCurrentView('video-interview')}
+                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-all duration-200"
+                  >
+                    🎥 Grabar Video-Pitch
+                  </button>
+                </div>
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={loading}
@@ -448,33 +772,104 @@ function App() {
 
     return (
       <div className="space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            🤖 TRABAJAI
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400">
-            AI-Powered Recruitment Platform
-          </p>
+        {/* Hero Section with Mobile Interview */}
+        <div className="relative bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 rounded-3xl overflow-hidden">
+          <div className="absolute inset-0 bg-black opacity-40"></div>
+          <div className="relative z-10 px-8 py-16">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+              <div>
+                <h1 className="text-5xl font-bold text-white mb-6">
+                  🤖 TRABAJAI
+                </h1>
+                <p className="text-xl text-blue-100 mb-8">
+                  Plataforma de Reclutamiento Impulsada por IA con Video-Entrevistas Móviles
+                </p>
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => setCurrentView('video-interview')}
+                    className="px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white rounded-xl font-bold transition-all duration-200 transform hover:scale-105"
+                  >
+                    📱 Grabar Video-Pitch
+                  </button>
+                  <button
+                    onClick={() => setCurrentView('candidates')}
+                    className="px-6 py-3 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-xl font-bold transition-all duration-200"
+                  >
+                    🎯 Registrarse
+                  </button>
+                </div>
+              </div>
+              <div className="relative">
+                <img 
+                  src="https://images.pexels.com/photos/12433032/pexels-photo-12433032.jpeg" 
+                  alt="Mobile Interview" 
+                  className="w-full max-w-md mx-auto rounded-2xl shadow-2xl"
+                />
+                <div className="absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full opacity-80 animate-pulse"></div>
+                <div className="absolute -bottom-4 -right-4 w-16 h-16 bg-gradient-to-r from-blue-500 to-teal-600 rounded-full opacity-80 animate-pulse"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Stats Grid */}
+        {/* Enhanced Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 text-white">
-            <div className="text-3xl font-bold">{analytics.total_candidates}</div>
-            <div className="text-blue-100">Total Candidates</div>
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 text-white transform hover:scale-105 transition-all duration-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-3xl font-bold">{analytics.total_candidates}</div>
+                <div className="text-blue-100">Total Candidates</div>
+              </div>
+              <div className="text-4xl opacity-80">👥</div>
+            </div>
           </div>
-          <div className="bg-gradient-to-r from-green-500 to-teal-600 rounded-2xl p-6 text-white">
-            <div className="text-3xl font-bold">{analytics.total_jobs}</div>
-            <div className="text-green-100">Active Jobs</div>
+          <div className="bg-gradient-to-r from-green-500 to-teal-600 rounded-2xl p-6 text-white transform hover:scale-105 transition-all duration-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-3xl font-bold">{analytics.total_jobs}</div>
+                <div className="text-green-100">Active Jobs</div>
+              </div>
+              <div className="text-4xl opacity-80">💼</div>
+            </div>
           </div>
-          <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl p-6 text-white">
-            <div className="text-3xl font-bold">{analytics.total_matches}</div>
-            <div className="text-orange-100">AI Matches</div>
+          <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl p-6 text-white transform hover:scale-105 transition-all duration-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-3xl font-bold">{analytics.total_matches}</div>
+                <div className="text-orange-100">AI Matches</div>
+              </div>
+              <div className="text-4xl opacity-80">🎯</div>
+            </div>
           </div>
-          <div className="bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl p-6 text-white">
-            <div className="text-3xl font-bold">{analytics.success_rate}%</div>
-            <div className="text-purple-100">Success Rate</div>
+          <div className="bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl p-6 text-white transform hover:scale-105 transition-all duration-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-3xl font-bold">{analytics.success_rate}%</div>
+                <div className="text-purple-100">Success Rate</div>
+              </div>
+              <div className="text-4xl opacity-80">📊</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Video Interview Stats */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            📱 Video Interview Analytics
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl">
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">47</div>
+              <div className="text-sm text-blue-800 dark:text-blue-200">Videos Grabados Hoy</div>
+            </div>
+            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl">
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400">92%</div>
+              <div className="text-sm text-green-800 dark:text-green-200">Calidad de Audio/Video</div>
+            </div>
+            <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl">
+              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">1.2m</div>
+              <div className="text-sm text-purple-800 dark:text-purple-200">Tiempo Promedio</div>
+            </div>
           </div>
         </div>
 
@@ -485,8 +880,18 @@ function App() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {Object.entries(analytics.niche_distribution).map(([niche, data]) => (
-              <div key={niche} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <div className="font-semibold text-gray-900 dark:text-white capitalize">
+              <div key={niche} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-lg transition-all duration-200">
+                <div className="font-semibold text-gray-900 dark:text-white capitalize flex items-center">
+                  <span className="mr-2">
+                    {niche === 'tech' && '💻'}
+                    {niche === 'creative' && '🎨'}
+                    {niche === 'health' && '⚕️'}
+                    {niche === 'finance' && '💰'}
+                    {niche === 'marketing' && '📢'}
+                    {niche === 'sales' && '📈'}
+                    {niche === 'operations' && '⚙️'}
+                    {niche === 'education' && '📚'}
+                  </span>
                   {niche}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -497,30 +902,45 @@ function App() {
           </div>
         </div>
 
-        {/* Recent Jobs */}
+        {/* Recent Jobs with Enhanced UI */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
             💼 Recent Jobs
           </h2>
           <div className="space-y-4">
             {jobs.slice(0, 3).map((job) => (
-              <div key={job.id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+              <div key={job.id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 hover:shadow-lg transition-all duration-200">
                 <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">
-                      {job.title} at {job.company}
-                    </h3>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <span className="text-lg">
+                        {job.niche === 'tech' && '💻'}
+                        {job.niche === 'creative' && '🎨'}
+                        {job.niche === 'health' && '⚕️'}
+                        {job.niche === 'finance' && '💰'}
+                      </span>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                        {job.title} at {job.company}
+                      </h3>
+                    </div>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                       {job.location} • {job.experience_level} • {job.niche}
                     </p>
                     <p className="text-sm text-green-600 font-medium mt-2">
                       ${job.salary_range_min?.toLocaleString()} - ${job.salary_range_max?.toLocaleString()}
                     </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {job.required_skills?.slice(0, 3).map((skill, index) => (
+                        <span key={index} className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                   <button
                     onClick={() => generateMatches(job.id)}
                     disabled={loading}
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50"
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50 transform hover:scale-105"
                   >
                     {loading ? '🔄' : '🎯 Generate Matches'}
                   </button>
@@ -530,7 +950,7 @@ function App() {
           </div>
         </div>
 
-        {/* AI Matches */}
+        {/* AI Matches with Video Preview */}
         {matches.length > 0 && (
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
@@ -538,24 +958,42 @@ function App() {
             </h2>
             <div className="space-y-4">
               {matches.slice(0, 5).map((match) => (
-                <div key={match.id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                <div key={match.id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 hover:shadow-lg transition-all duration-200">
                   <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-semibold text-gray-900 dark:text-white">
-                        Match Score: {match.overall_score.toFixed(1)}%
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <div className={`w-4 h-4 rounded-full ${match.overall_score >= 80 ? 'bg-green-500' : match.overall_score >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}></div>
+                        <div className="font-semibold text-gray-900 dark:text-white">
+                          Match Score: {match.overall_score.toFixed(1)}%
+                        </div>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {match.overall_score >= 80 ? '⭐ Excellent' : match.overall_score >= 60 ? '👍 Good' : '👌 Fair'}
+                        </span>
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Skills: {match.skills_match.toFixed(1)}% • Culture: {match.culture_match.toFixed(1)}% • Salary: {match.salary_match.toFixed(1)}%
+                      <div className="grid grid-cols-4 gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        <div>Skills: {match.skills_match.toFixed(1)}%</div>
+                        <div>Culture: {match.culture_match.toFixed(1)}%</div>
+                        <div>Salary: {match.salary_match.toFixed(1)}%</div>
+                        <div>Success: {match.success_projection.toFixed(1)}%</div>
                       </div>
-                      <div className="text-sm text-blue-600 dark:text-blue-400 mt-2">
-                        {match.ai_analysis}
+                      <div className="text-sm text-blue-600 dark:text-blue-400 mb-3">
+                        {match.ai_analysis?.substring(0, 200)}...
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {match.match_reasons?.slice(0, 2).map((reason, index) => (
+                          <span key={index} className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs rounded-full">
+                            ✓ {reason.substring(0, 50)}...
+                          </span>
+                        ))}
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-4 h-4 rounded-full ${match.overall_score >= 80 ? 'bg-green-500' : match.overall_score >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}></div>
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        {match.overall_score >= 80 ? 'Excellent' : match.overall_score >= 60 ? 'Good' : 'Fair'}
-                      </span>
+                    <div className="ml-4 text-center">
+                      <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all duration-200">
+                        📹 Ver Video
+                      </button>
+                      <button className="mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-all duration-200 block w-full">
+                        📞 Interview
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -585,6 +1023,16 @@ function App() {
                 }`}
               >
                 📊 Dashboard
+              </button>
+              <button
+                onClick={() => setCurrentView('video-interview')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                  currentView === 'video-interview'
+                    ? 'bg-blue-500 text-white'
+                    : 'text-gray-700 dark:text-gray-300 hover:text-blue-500'
+                }`}
+              >
+                📱 Video Interview
               </button>
               <button
                 onClick={() => setCurrentView('candidates')}
@@ -627,6 +1075,7 @@ function App() {
         <Navigation />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {currentView === 'dashboard' && <Dashboard />}
+          {currentView === 'video-interview' && <VideoInterviewModule />}
           {currentView === 'candidates' && <CandidateForm />}
           {currentView === 'jobs' && <JobForm />}
         </div>
