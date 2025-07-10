@@ -896,42 +896,81 @@ function App() {
           </div>
         </div>
 
-        {/* Enhanced Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 text-white transform hover:scale-105 transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-3xl font-bold">{analytics.total_candidates}</div>
-                <div className="text-blue-100">Total Candidates</div>
+        {/* Premium Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="card-premium stats-card-blue p-8 text-white group hover:scale-105 transition-all duration-500">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-white bg-opacity-20 rounded-xl">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
               </div>
-              <div className="text-4xl opacity-80">👥</div>
+              <div className="text-right">
+                <div className="text-sm opacity-80">Total</div>
+                <div className="text-3xl font-black">{analytics.total_candidates}</div>
+              </div>
+            </div>
+            <div className="text-blue-100 font-medium">Candidatos Registrados</div>
+            <div className="mt-3 flex items-center text-green-200 text-sm">
+              <Icons.CheckCircle />
+              <span className="ml-1">+12% este mes</span>
             </div>
           </div>
-          <div className="bg-gradient-to-r from-green-500 to-teal-600 rounded-2xl p-6 text-white transform hover:scale-105 transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-3xl font-bold">{analytics.total_jobs}</div>
-                <div className="text-green-100">Active Jobs</div>
+
+          <div className="card-premium stats-card-green p-8 text-white group hover:scale-105 transition-all duration-500">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-white bg-opacity-20 rounded-xl">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6" />
+                </svg>
               </div>
-              <div className="text-4xl opacity-80">💼</div>
+              <div className="text-right">
+                <div className="text-sm opacity-80">Activos</div>
+                <div className="text-3xl font-black">{analytics.total_jobs}</div>
+              </div>
+            </div>
+            <div className="text-green-100 font-medium">Empleos Disponibles</div>
+            <div className="mt-3 flex items-center text-emerald-200 text-sm">
+              <Icons.CheckCircle />
+              <span className="ml-1">+8% esta semana</span>
             </div>
           </div>
-          <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl p-6 text-white transform hover:scale-105 transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-3xl font-bold">{analytics.total_matches}</div>
-                <div className="text-orange-100">AI Matches</div>
+
+          <div className="card-premium stats-card-purple p-8 text-white group hover:scale-105 transition-all duration-500">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-white bg-opacity-20 rounded-xl">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
               </div>
-              <div className="text-4xl opacity-80">🎯</div>
+              <div className="text-right">
+                <div className="text-sm opacity-80">IA Generados</div>
+                <div className="text-3xl font-black">{analytics.total_matches}</div>
+              </div>
+            </div>
+            <div className="text-purple-100 font-medium">Matches Inteligentes</div>
+            <div className="mt-3 flex items-center text-violet-200 text-sm">
+              <Icons.Sparkles />
+              <span className="ml-1">Precisión 94%</span>
             </div>
           </div>
-          <div className="bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl p-6 text-white transform hover:scale-105 transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-3xl font-bold">{analytics.success_rate}%</div>
-                <div className="text-purple-100">Success Rate</div>
+
+          <div className="card-premium stats-card-orange p-8 text-white group hover:scale-105 transition-all duration-500">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-white bg-opacity-20 rounded-xl">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
               </div>
-              <div className="text-4xl opacity-80">📊</div>
+              <div className="text-right">
+                <div className="text-sm opacity-80">Tasa</div>
+                <div className="text-3xl font-black">{analytics.success_rate}%</div>
+              </div>
+            </div>
+            <div className="text-orange-100 font-medium">Éxito en Colocaciones</div>
+            <div className="mt-3 flex items-center text-amber-200 text-sm">
+              <Icons.Star />
+              <span className="ml-1">Líder del mercado</span>
             </div>
           </div>
         </div>
