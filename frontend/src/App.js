@@ -801,46 +801,96 @@ function App() {
 
   const Dashboard = () => {
     if (!analytics) {
-      return <div className="text-center text-gray-500 dark:text-gray-400">Loading dashboard...</div>;
+      return (
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <div className="loading-shimmer w-32 h-32 rounded-full mx-auto mb-4"></div>
+            <div className="text-lg font-medium text-gray-600 dark:text-gray-400">
+              Cargando Dashboard Premium...
+            </div>
+          </div>
+        </div>
+      );
     }
 
     return (
-      <div className="space-y-8">
-        {/* Hero Section with Mobile Interview */}
-        <div className="relative bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 rounded-3xl overflow-hidden">
-          <div className="absolute inset-0 bg-black opacity-40"></div>
-          <div className="relative z-10 px-8 py-16">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              <div>
-                <h1 className="text-5xl font-bold text-white mb-6">
-                  🤖 TRABAJAI
+      <div className="space-y-12 animate-fade-scale">
+        {/* Premium Hero Section */}
+        <div className="gradient-hero rounded-3xl overflow-hidden shadow-premium">
+          <div className="absolute inset-0 pattern-dots opacity-30"></div>
+          <div className="relative z-20 px-8 py-20 lg:py-24">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
+              <div className="text-center lg:text-left animate-slide-up">
+                <div className="inline-flex items-center px-4 py-2 bg-white bg-opacity-20 rounded-full text-white text-sm font-medium mb-6 glass-card">
+                  <Icons.Sparkles />
+                  <span className="ml-2">Powered by Advanced AI</span>
+                </div>
+                <h1 className="text-6xl lg:text-7xl font-black text-white mb-6 hero-title">
+                  TRABAJAI
+                  <span className="text-4xl lg:text-5xl block text-blue-200 font-light mt-2">
+                    Premium Edition
+                  </span>
                 </h1>
-                <p className="text-xl text-blue-100 mb-8">
-                  Plataforma de Reclutamiento Impulsada por IA con Video-Entrevistas Móviles
+                <p className="text-xl lg:text-2xl text-blue-100 mb-10 hero-subtitle leading-relaxed">
+                  La plataforma de reclutamiento más avanzada del mundo con IA de próxima generación 
+                  y video-entrevistas inmersivas
                 </p>
-                <div className="flex space-x-4">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                   <button
                     onClick={() => setCurrentView('video-interview')}
-                    className="px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white rounded-xl font-bold transition-all duration-200 transform hover:scale-105"
+                    className="btn-premium group px-8 py-4 text-lg font-bold flex items-center justify-center gap-3"
                   >
-                    📱 Grabar Video-Pitch
+                    <Icons.Video />
+                    <span>Comenzar Video-Pitch</span>
+                    <Icons.ArrowRight className="group-hover:translate-x-1 transition-transform" />
                   </button>
                   <button
                     onClick={() => setCurrentView('candidates')}
-                    className="px-6 py-3 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-xl font-bold transition-all duration-200"
+                    className="btn-secondary px-8 py-4 text-lg font-bold flex items-center justify-center gap-3"
                   >
-                    🎯 Registrarse
+                    <Icons.Star />
+                    <span>Únete Ahora</span>
                   </button>
                 </div>
+                
+                {/* Trust Indicators */}
+                <div className="mt-12 flex items-center justify-center lg:justify-start space-x-8 text-white opacity-80">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold">98%</div>
+                    <div className="text-sm">Precisión IA</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold">5x</div>
+                    <div className="text-sm">Más Rápido</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold">24/7</div>
+                    <div className="text-sm">Disponible</div>
+                  </div>
+                </div>
               </div>
-              <div className="relative">
-                <img 
-                  src="https://images.pexels.com/photos/12433032/pexels-photo-12433032.jpeg" 
-                  alt="Mobile Interview" 
-                  className="w-full max-w-md mx-auto rounded-2xl shadow-2xl"
-                />
-                <div className="absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full opacity-80 animate-pulse"></div>
-                <div className="absolute -bottom-4 -right-4 w-16 h-16 bg-gradient-to-r from-blue-500 to-teal-600 rounded-full opacity-80 animate-pulse"></div>
+              
+              <div className="relative animate-float">
+                <div className="relative z-10">
+                  <img 
+                    src="https://images.unsplash.com/photo-1544717297-fa95b6ee9643?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjByZWNydWl0bWVudHxlbnwwfHx8Ymx1ZXwxNzUyMTc4MDE3fDA&ixlib=rb-4.1.0&q=85" 
+                    alt="Professional AI Recruitment" 
+                    className="w-full max-w-lg mx-auto rounded-3xl shadow-glass glass-card p-4"
+                  />
+                </div>
+                
+                {/* Floating Elements */}
+                <div className="absolute -top-8 -left-8 w-32 h-32 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full opacity-20 animate-pulse-premium"></div>
+                <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-gradient-to-br from-pink-400 to-red-500 rounded-full opacity-20 animate-pulse-premium" style={{animationDelay: '1s'}}></div>
+                <div className="absolute top-16 -right-4 w-16 h-16 bg-gradient-to-br from-green-400 to-teal-500 rounded-full opacity-20 animate-pulse-premium" style={{animationDelay: '2s'}}></div>
+                
+                {/* AI Badge */}
+                <div className="absolute top-8 left-8 glass-card px-4 py-2 text-white text-sm font-medium">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span>IA Activa</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
