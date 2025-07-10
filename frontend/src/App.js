@@ -2134,6 +2134,8 @@ function App() {
           {currentView === 'video-interview' && <VideoInterviewModule />}
           {currentView === 'candidates' && <CandidateForm />}
           {currentView === 'jobs' && <JobForm />}
+          {currentView === 'pricing' && <PricingPlans />}
+          {currentView === 'login' && <LoginForm />}
         </div>
       </div>
     </div>
