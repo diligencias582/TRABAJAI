@@ -1353,8 +1353,8 @@ function App() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
-              <div className="text-4xl font-black text-blue-600 dark:text-blue-400 mb-2">127</div>
-              <div className="text-sm font-medium text-blue-800 dark:text-blue-200">Videos Analizados Hoy</div>
+              <div className="text-4xl font-black text-blue-600 dark:text-blue-400 mb-2">{analytics.candidates_with_video}</div>
+              <div className="text-sm font-medium text-blue-800 dark:text-blue-200">Videos Analizados Total</div>
               <div className="text-xs text-blue-600 dark:text-blue-400 mt-2">+23% vs ayer</div>
             </div>
             
