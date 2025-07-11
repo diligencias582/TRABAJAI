@@ -227,7 +227,17 @@ frontend:
           agent: "main"
           comment: "✅ Implementado sistema completo de chat frontend: 1) Componente flotante con botón de toggle, 2) Interfaz para seleccionar tipos de chat (general, soporte, empleos, personalizado), 3) Ventana de chat con mensajes en tiempo real, 4) Características: emojis, archivos adjuntos, indicadores de escritura, reacciones, notificaciones, historial mensajes, usuarios online, crear salas personalizadas, 5) Conexión WebSocket con Socket.IO, 6) Dependencias instaladas: socket.io-client, @emoji-mart/react, @emoji-mart/data"
 
-  - task: "News Section Frontend - Complete UI"
+  - task: "Auto-reload Issue Fix Frontend"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "✅ PROBLEMA RESUELTO: Se optimizó la configuración del socket de chat removiendo forceNew: true y reduciendo los intentos de reconexión de 5 a 3. Se cambió la inicialización del socket para que funcione sin esperar al usuario, evitando dependencias circulares. Se separó la inicialización del socket de la carga de datos del usuario para evitar auto-reloads. Frontend ahora funciona correctamente sin recargas constantes."
     implemented: true
     working: true
     file: "frontend/src/App.js"
