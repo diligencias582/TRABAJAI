@@ -831,6 +831,475 @@ async def get_video_analytics():
             "Creatividad"
         ]
     }
+# ============================================================================
+# CHAT SYSTEM - WEBSOCKET AND API ENDPOINTS
+# ============================================================================
+
+# Socket.IO Events
+@sio.event
+async def connect(sid, environ):
+    """Handle client connection"""
+    print(f"Client {sid} connected")
+    
+@sio.event
+async def disconnect(sid):
+    """Handle client disconnection"""
+    print(f"Client {sid} disconnected")
+    # Remove from connected users
+    for user_id, user_sid in connected_users.items():
+        if user_sid == sid:
+            del connected_users[user_id]
+            # Update user status to offline
+            chat_participants_collection.update_many(
+                {"user_id": user_id},
+                {"$set": {"is_online": False, "last_seen": datetime.utcnow()}}
+            )
+            break
+
+@sio.event
+async def join_room(sid, data):
+    """Join a chat room"""
+    try:
+        room_id = data['room_id']
+        user_id = data['user_id']
+        
+        # Store user connection
+        connected_users[user_id] = sid
+        
+        # Join Socket.IO room
+        await sio.enter_room(sid, room_id)
+        
+        # Update participant status
+        chat_participants_collection.update_one(
+            {"user_id": user_id, "room_id": room_id},
+            {
+                "$set": {
+                    "is_online": True,
+                    "last_seen": datetime.utcnow()
+                }
+            },
+            upsert=True
+        )
+        
+        # Notify room about user joining
+        await sio.emit('user_joined', {
+            'user_id': user_id,
+            'room_id': room_id,
+            'timestamp': datetime.utcnow().isoformat()
+        }, room=room_id)
+        
+        print(f"User {user_id} joined room {room_id}")
+        
+    except Exception as e:
+        print(f"Error joining room: {e}")
+        await sio.emit('error', {'message': 'Failed to join room'}, room=sid)
+
+@sio.event
+async def leave_room(sid, data):
+    """Leave a chat room"""
+    try:
+        room_id = data['room_id']
+        user_id = data['user_id']
+        
+        # Leave Socket.IO room
+        await sio.leave_room(sid, room_id)
+        
+        # Update participant status
+        chat_participants_collection.update_one(
+            {"user_id": user_id, "room_id": room_id},
+            {"$set": {"is_online": False, "last_seen": datetime.utcnow()}}
+        )
+        
+        # Notify room about user leaving
+        await sio.emit('user_left', {
+            'user_id': user_id,
+            'room_id': room_id,
+            'timestamp': datetime.utcnow().isoformat()
+        }, room=room_id)
+        
+        print(f"User {user_id} left room {room_id}")
+        
+    except Exception as e:
+        print(f"Error leaving room: {e}")
+
+@sio.event
+async def send_message(sid, data):
+    """Send a message to a room"""
+    try:
+        message_data = {
+            'id': str(uuid.uuid4()),
+            'room_id': data['room_id'],
+            'user_id': data['user_id'],
+            'user_name': data['user_name'],
+            'message': data['message'],
+            'message_type': data.get('message_type', 'text'),
+            'timestamp': datetime.utcnow(),
+            'edited': False,
+            'reply_to': data.get('reply_to'),
+            'attachments': data.get('attachments', []),
+            'reactions': {}
+        }
+        
+        # Save message to database
+        chat_messages_collection.insert_one(message_data)
+        
+        # Update room last activity
+        chat_rooms_collection.update_one(
+            {"id": data['room_id']},
+            {
+                "$set": {
+                    "last_message": data['message'][:100] + "..." if len(data['message']) > 100 else data['message'],
+                    "last_activity": datetime.utcnow()
+                }
+            }
+        )
+        
+        # Prepare message for broadcast
+        broadcast_message = {
+            'id': message_data['id'],
+            'room_id': message_data['room_id'],
+            'user_id': message_data['user_id'],
+            'user_name': message_data['user_name'],
+            'message': message_data['message'],
+            'message_type': message_data['message_type'],
+            'timestamp': message_data['timestamp'].isoformat(),
+            'edited': message_data['edited'],
+            'reply_to': message_data['reply_to'],
+            'attachments': message_data['attachments'],
+            'reactions': message_data['reactions']
+        }
+        
+        # Broadcast message to room
+        await sio.emit('new_message', broadcast_message, room=data['room_id'])
+        
+        print(f"Message sent to room {data['room_id']} by user {data['user_id']}")
+        
+    except Exception as e:
+        print(f"Error sending message: {e}")
+        await sio.emit('error', {'message': 'Failed to send message'}, room=sid)
+
+@sio.event
+async def typing_start(sid, data):
+    """User started typing"""
+    try:
+        room_id = data['room_id']
+        user_id = data['user_id']
+        user_name = data['user_name']
+        
+        # Add to typing users
+        if room_id not in typing_users:
+            typing_users[room_id] = {}
+        typing_users[room_id][user_id] = {
+            'user_name': user_name,
+            'timestamp': datetime.utcnow()
+        }
+        
+        # Notify room
+        await sio.emit('user_typing', {
+            'room_id': room_id,
+            'user_id': user_id,
+            'user_name': user_name,
+            'typing': True
+        }, room=room_id)
+        
+    except Exception as e:
+        print(f"Error handling typing start: {e}")
+
+@sio.event
+async def typing_stop(sid, data):
+    """User stopped typing"""
+    try:
+        room_id = data['room_id']
+        user_id = data['user_id']
+        user_name = data['user_name']
+        
+        # Remove from typing users
+        if room_id in typing_users and user_id in typing_users[room_id]:
+            del typing_users[room_id][user_id]
+            if not typing_users[room_id]:
+                del typing_users[room_id]
+        
+        # Notify room
+        await sio.emit('user_typing', {
+            'room_id': room_id,
+            'user_id': user_id,
+            'user_name': user_name,
+            'typing': False
+        }, room=room_id)
+        
+    except Exception as e:
+        print(f"Error handling typing stop: {e}")
+
+@sio.event
+async def add_reaction(sid, data):
+    """Add reaction to a message"""
+    try:
+        message_id = data['message_id']
+        emoji = data['emoji']
+        user_id = data['user_id']
+        
+        # Update message with reaction
+        message = chat_messages_collection.find_one({"id": message_id})
+        if message:
+            reactions = message.get('reactions', {})
+            if emoji not in reactions:
+                reactions[emoji] = []
+            
+            if user_id not in reactions[emoji]:
+                reactions[emoji].append(user_id)
+                
+                # Update in database
+                chat_messages_collection.update_one(
+                    {"id": message_id},
+                    {"$set": {"reactions": reactions}}
+                )
+                
+                # Broadcast reaction update
+                await sio.emit('reaction_added', {
+                    'message_id': message_id,
+                    'emoji': emoji,
+                    'user_id': user_id,
+                    'reactions': reactions
+                }, room=message['room_id'])
+                
+    except Exception as e:
+        print(f"Error adding reaction: {e}")
+
+# REST API Endpoints for Chat
+@app.post("/api/chat/rooms")
+async def create_chat_room(room_data: RoomCreate):
+    """Create a new chat room"""
+    try:
+        room_id = str(uuid.uuid4())
+        room = {
+            'id': room_id,
+            'name': room_data.name,
+            'room_type': room_data.room_type,
+            'participants': room_data.participants,
+            'created_by': room_data.participants[0] if room_data.participants else "system",
+            'created_at': datetime.utcnow(),
+            'last_message': None,
+            'last_activity': datetime.utcnow(),
+            'is_active': True,
+            'metadata': room_data.metadata
+        }
+        
+        # Insert room
+        chat_rooms_collection.insert_one(room)
+        
+        # Add participants
+        for participant_id in room_data.participants:
+            participant = {
+                'user_id': participant_id,
+                'room_id': room_id,
+                'joined_at': datetime.utcnow(),
+                'last_seen': datetime.utcnow(),
+                'is_online': False,
+                'is_typing': False,
+                'role': 'participant'
+            }
+            chat_participants_collection.insert_one(participant)
+        
+        return {"message": "Room created successfully", "room_id": room_id}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create room: {str(e)}")
+
+@app.get("/api/chat/rooms/{user_id}")
+async def get_user_rooms(user_id: str):
+    """Get all rooms for a user"""
+    try:
+        # Get rooms where user is participant
+        participant_rooms = list(chat_participants_collection.find(
+            {"user_id": user_id}, 
+            {"room_id": 1, "_id": 0}
+        ))
+        
+        room_ids = [room['room_id'] for room in participant_rooms]
+        
+        # Get room details
+        rooms = list(chat_rooms_collection.find(
+            {"id": {"$in": room_ids}, "is_active": True},
+            {"_id": 0}
+        ))
+        
+        # Format dates for JSON serialization
+        for room in rooms:
+            room['created_at'] = room['created_at'].isoformat()
+            room['last_activity'] = room['last_activity'].isoformat()
+            
+        return rooms
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get rooms: {str(e)}")
+
+@app.get("/api/chat/messages/{room_id}")
+async def get_room_messages(room_id: str, limit: int = 50, offset: int = 0):
+    """Get messages for a room"""
+    try:
+        messages = list(chat_messages_collection.find(
+            {"room_id": room_id},
+            {"_id": 0}
+        ).sort("timestamp", -1).skip(offset).limit(limit))
+        
+        # Format timestamps
+        for message in messages:
+            message['timestamp'] = message['timestamp'].isoformat()
+            
+        return {"messages": messages[::-1]}  # Reverse to show oldest first
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get messages: {str(e)}")
+
+@app.get("/api/chat/rooms/{room_id}/participants")
+async def get_room_participants(room_id: str):
+    """Get participants in a room"""
+    try:
+        participants = list(chat_participants_collection.find(
+            {"room_id": room_id},
+            {"_id": 0}
+        ))
+        
+        # Format dates
+        for participant in participants:
+            participant['joined_at'] = participant['joined_at'].isoformat()
+            participant['last_seen'] = participant['last_seen'].isoformat()
+            
+        return {"participants": participants}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get participants: {str(e)}")
+
+@app.post("/api/chat/rooms/{room_id}/join")
+async def join_chat_room(room_id: str, user_id: str):
+    """Join a chat room"""
+    try:
+        # Check if room exists
+        room = chat_rooms_collection.find_one({"id": room_id})
+        if not room:
+            raise HTTPException(status_code=404, detail="Room not found")
+        
+        # Add user to participants if not already present
+        existing_participant = chat_participants_collection.find_one({
+            "user_id": user_id,
+            "room_id": room_id
+        })
+        
+        if not existing_participant:
+            participant = {
+                'user_id': user_id,
+                'room_id': room_id,
+                'joined_at': datetime.utcnow(),
+                'last_seen': datetime.utcnow(),
+                'is_online': True,
+                'is_typing': False,
+                'role': 'participant'
+            }
+            chat_participants_collection.insert_one(participant)
+            
+            # Update room participants list
+            chat_rooms_collection.update_one(
+                {"id": room_id},
+                {"$addToSet": {"participants": user_id}}
+            )
+        
+        return {"message": "Successfully joined room"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to join room: {str(e)}")
+
+@app.delete("/api/chat/rooms/{room_id}/leave")
+async def leave_chat_room(room_id: str, user_id: str):
+    """Leave a chat room"""
+    try:
+        # Remove from participants
+        chat_participants_collection.delete_one({
+            "user_id": user_id,
+            "room_id": room_id
+        })
+        
+        # Remove from room participants list
+        chat_rooms_collection.update_one(
+            {"id": room_id},
+            {"$pull": {"participants": user_id}}
+        )
+        
+        return {"message": "Successfully left room"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to leave room: {str(e)}")
+
+@app.get("/api/chat/analytics")
+async def get_chat_analytics():
+    """Get chat system analytics"""
+    try:
+        total_rooms = chat_rooms_collection.count_documents({"is_active": True})
+        total_messages = chat_messages_collection.count_documents({})
+        active_users = chat_participants_collection.count_documents({"is_online": True})
+        
+        # Recent activity (last 24 hours)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        recent_messages = chat_messages_collection.count_documents({
+            "timestamp": {"$gte": yesterday}
+        })
+        
+        return {
+            "total_rooms": total_rooms,
+            "total_messages": total_messages,
+            "active_users": active_users,
+            "recent_messages_24h": recent_messages,
+            "room_types": {
+                "support": chat_rooms_collection.count_documents({"room_type": "support", "is_active": True}),
+                "candidate_employer": chat_rooms_collection.count_documents({"room_type": "candidate_employer", "is_active": True}),
+                "general": chat_rooms_collection.count_documents({"room_type": "general", "is_active": True}),
+                "custom": chat_rooms_collection.count_documents({"room_type": "custom", "is_active": True})
+            }
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get analytics: {str(e)}")
+
+# Initialize default chat rooms
+def initialize_default_chat_rooms():
+    """Initialize default chat rooms"""
+    default_rooms = [
+        {
+            'id': 'general-chat',
+            'name': 'Chat General de TRABAJAI',
+            'room_type': 'general',
+            'participants': [],
+            'created_by': 'system',
+            'created_at': datetime.utcnow(),
+            'last_message': None,
+            'last_activity': datetime.utcnow(),
+            'is_active': True,
+            'metadata': {'description': 'Sala de chat general para todos los usuarios'}
+        },
+        {
+            'id': 'support-chat',
+            'name': 'Soporte Técnico',
+            'room_type': 'support',
+            'participants': [],
+            'created_by': 'system',
+            'created_at': datetime.utcnow(),
+            'last_message': None,
+            'last_activity': datetime.utcnow(),
+            'is_active': True,
+            'metadata': {'description': 'Sala de soporte para ayuda técnica'}
+        }
+    ]
+    
+    for room in default_rooms:
+        existing = chat_rooms_collection.find_one({"id": room['id']})
+        if not existing:
+            chat_rooms_collection.insert_one(room)
+            print(f"Created default room: {room['name']}")
+
+# Initialize default rooms on startup
+initialize_default_chat_rooms()
+
+# Create the combined app
+app = socket_app
 
 @app.get("/api/niches")
 async def get_niches():
