@@ -2746,6 +2746,194 @@ function App() {
     );
   };
 
+  const NewsSection = () => {
+    // Load news when component mounts
+    useEffect(() => {
+      loadNews();
+    }, []);
+
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    };
+
+    const renderContent = (content) => {
+      return content.split('\n').map((line, index) => {
+        if (line.startsWith('## ')) {
+          return (
+            <h2 key={index} className="text-2xl font-bold text-gray-800 dark:text-white mt-8 mb-4">
+              {line.substring(3)}
+            </h2>
+          );
+        } else if (line.startsWith('**') && line.endsWith('**')) {
+          return (
+            <p key={index} className="text-lg text-gray-700 dark:text-gray-300 mb-4 font-semibold">
+              {line.substring(2, line.length - 2)}
+            </p>
+          );
+        } else if (line.trim() !== '') {
+          return (
+            <p key={index} className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+              {line}
+            </p>
+          );
+        }
+        return null;
+      });
+    };
+
+    if (selectedNewsArticle) {
+      return (
+        <div className="max-w-4xl mx-auto p-6 space-y-8 animate-fade-scale">
+          {/* Back Button */}
+          <button
+            onClick={() => setSelectedNewsArticle(null)}
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Volver a Noticias
+          </button>
+
+          {/* Article Header */}
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-premium p-8">
+            <div className="mb-6">
+              <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium mb-4">
+                {selectedNewsArticle.category}
+              </span>
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                {selectedNewsArticle.title}
+              </h1>
+              <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400 text-sm">
+                <span>Por {selectedNewsArticle.author}</span>
+                <span>•</span>
+                <span>{formatDate(selectedNewsArticle.date)}</span>
+              </div>
+            </div>
+
+            {/* Article Image */}
+            {selectedNewsArticle.image && (
+              <div className="mb-8">
+                <img
+                  src={selectedNewsArticle.image}
+                  alt={selectedNewsArticle.title}
+                  className="w-full h-64 object-cover rounded-2xl shadow-lg"
+                />
+              </div>
+            )}
+
+            {/* Article Content */}
+            <div className="prose max-w-none">
+              {renderContent(selectedNewsArticle.content)}
+            </div>
+
+            {/* Tags */}
+            {selectedNewsArticle.tags && selectedNewsArticle.tags.length > 0 && (
+              <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Etiquetas:</p>
+                <div className="flex flex-wrap gap-2">
+                  {selectedNewsArticle.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="max-w-7xl mx-auto p-6 space-y-8 animate-fade-scale">
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Noticias TRABAJAI
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-400">
+            Mantente informado sobre las últimas novedades en el mundo laboral y tecnológico
+          </p>
+        </div>
+
+        {/* News Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {news.map((article) => (
+            <article
+              key={article.id}
+              className="bg-white dark:bg-gray-800 rounded-3xl shadow-premium overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+              onClick={() => {
+                setSelectedNewsArticle(article);
+              }}
+            >
+              {/* Article Image */}
+              {article.image && (
+                <div className="h-48 overflow-hidden">
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  />
+                </div>
+              )}
+
+              {/* Article Content */}
+              <div className="p-6">
+                <div className="mb-3">
+                  <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium">
+                    {article.category}
+                  </span>
+                </div>
+                
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2">
+                  {article.title}
+                </h2>
+                
+                <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
+                  {article.summary}
+                </p>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm">
+                    <Icons.News />
+                    <span>{formatDate(article.date)}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400 text-sm font-medium">
+                    <span>Leer más</span>
+                    <Icons.ArrowRight />
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {news.length === 0 && (
+          <div className="text-center py-12">
+            <Icons.News className="mx-auto mb-4 text-gray-400 w-12 h-12" />
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              No hay noticias disponibles
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400">
+              Las noticias aparecerán aquí cuando estén disponibles.
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className={darkMode ? 'dark' : ''}>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-all duration-200">
