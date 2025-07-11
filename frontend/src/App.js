@@ -54,6 +54,23 @@ function App() {
   const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const [stream, setStream] = useState(null);
+  // Chat states
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatSocket, setChatSocket] = useState(null);
+  const [chatRooms, setChatRooms] = useState([]);
+  const [currentChatRoom, setCurrentChatRoom] = useState(null);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [typingUsers, setTypingUsers] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [chatNotifications, setChatNotifications] = useState(0);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [chatView, setChatView] = useState('rooms'); // 'rooms' or 'chat'
+  const [selectedChatType, setSelectedChatType] = useState('general');
+  const typingTimeoutRef = useRef(null);
+  const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   // Load data on mount
   useEffect(() => {
