@@ -2416,6 +2416,300 @@ function App() {
       </div>
     </nav>
   );
+  // Chat Component
+  const ChatSystem = () => {
+    return (
+      <>
+        {/* Chat Toggle Button */}
+        <button
+          onClick={() => setIsChatOpen(!isChatOpen)}
+          className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-110"
+        >
+          {isChatOpen ? <Icons.Close /> : <Icons.Chat />}
+          {chatNotifications > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
+              {chatNotifications > 9 ? '9+' : chatNotifications}
+            </span>
+          )}
+        </button>
+
+        {/* Chat Window */}
+        {isChatOpen && (
+          <div className="fixed bottom-20 right-6 z-40 w-96 h-[500px] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            {/* Chat Header */}
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <Icons.Chat />
+                <div>
+                  <h3 className="font-bold text-lg">
+                    {chatView === 'chat' ? currentChatRoom?.name : 'Chat TRABAJAI'}
+                  </h3>
+                  <p className="text-sm opacity-90">
+                    {chatView === 'chat' ? `${onlineUsers.length} en línea` : 'Elige una sala'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {chatView === 'chat' && (
+                  <button
+                    onClick={() => setChatView('rooms')}
+                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                  >
+                    <Icons.ArrowRight className="transform rotate-180" />
+                  </button>
+                )}
+                <button
+                  onClick={() => setIsChatOpen(false)}
+                  className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                >
+                  <Icons.Close />
+                </button>
+              </div>
+            </div>
+
+            {/* Chat Content */}
+            <div className="h-full flex flex-col">
+              {chatView === 'rooms' ? (
+                <ChatRoomsList />
+              ) : (
+                <ChatWindow />
+              )}
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
+
+  // Chat Rooms List Component
+  const ChatRoomsList = () => {
+    const roomTypes = [
+      { type: 'general', name: 'General', icon: '🌐', color: 'bg-blue-500' },
+      { type: 'support', name: 'Soporte', icon: '🎧', color: 'bg-green-500' },
+      { type: 'candidate_employer', name: 'Empleos', icon: '💼', color: 'bg-purple-500' },
+      { type: 'custom', name: 'Personalizado', icon: '⚙️', color: 'bg-orange-500' }
+    ];
+
+    return (
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {/* Quick Room Type Selector */}
+        <div className="grid grid-cols-2 gap-2">
+          {roomTypes.map((type) => (
+            <button
+              key={type.type}
+              onClick={() => setSelectedChatType(type.type)}
+              className={`p-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                selectedChatType === type.type
+                  ? `${type.color} text-white shadow-lg transform scale-105`
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                <span className="text-lg">{type.icon}</span>
+                <span>{type.name}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Available Rooms */}
+        <div className="space-y-2">
+          <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
+            Salas Disponibles
+          </h4>
+          {chatRooms
+            .filter(room => selectedChatType === 'custom' || room.room_type === selectedChatType)
+            .map((room) => (
+              <button
+                key={room.id}
+                onClick={() => joinChatRoom(room)}
+                className="w-full text-left p-3 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200 hover:shadow-md"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="flex-shrink-0">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-lg ${
+                      room.room_type === 'general' ? 'bg-blue-500' :
+                      room.room_type === 'support' ? 'bg-green-500' :
+                      room.room_type === 'candidate_employer' ? 'bg-purple-500' :
+                      'bg-orange-500'
+                    }`}>
+                      {room.room_type === 'general' && '🌐'}
+                      {room.room_type === 'support' && '🎧'}
+                      {room.room_type === 'candidate_employer' && '💼'}
+                      {room.room_type === 'custom' && '⚙️'}
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h5 className="font-medium text-gray-900 dark:text-white truncate">
+                      {room.name}
+                    </h5>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                      {room.last_message || 'Sin mensajes'}
+                    </p>
+                  </div>
+                  <div className="flex-shrink-0 text-xs text-gray-400">
+                    {room.participants?.length || 0} 👥
+                  </div>
+                </div>
+              </button>
+            ))}
+        </div>
+
+        {/* Create Custom Room */}
+        <button
+          onClick={() => {
+            const roomName = prompt('Nombre de la sala:');
+            if (roomName) {
+              createChatRoom(roomName, 'custom');
+            }
+          }}
+          className="w-full p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-gray-500 dark:text-gray-400 hover:border-blue-500 hover:text-blue-500 transition-colors duration-200 flex items-center justify-center space-x-2"
+        >
+          <span className="text-2xl">+</span>
+          <span className="font-medium">Crear Sala</span>
+        </button>
+      </div>
+    );
+  };
+
+  // Chat Window Component
+  const ChatWindow = () => {
+    return (
+      <div className="flex-1 flex flex-col">
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {chatMessages.map((message, index) => (
+            <div
+              key={message.id || index}
+              className={`flex ${message.user_id === user?.id ? 'justify-end' : 'justify-start'}`}
+            >
+              <div
+                className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
+                  message.user_id === user?.id
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                }`}
+              >
+                {message.user_id !== user?.id && (
+                  <div className="text-xs font-semibold mb-1 opacity-70">
+                    {message.user_name}
+                  </div>
+                )}
+                
+                {message.message_type === 'image' && message.attachments?.[0] && (
+                  <img
+                    src={message.attachments[0]}
+                    alt="Imagen enviada"
+                    className="max-w-full h-auto rounded-lg mb-2"
+                  />
+                )}
+                
+                <div className="text-sm">
+                  {message.message}
+                </div>
+                
+                <div className="text-xs mt-1 opacity-70">
+                  {formatTime(message.timestamp)}
+                </div>
+                
+                {/* Reactions */}
+                {message.reactions && Object.keys(message.reactions).length > 0 && (
+                  <div className="flex space-x-1 mt-2">
+                    {Object.entries(message.reactions).map(([emoji, users]) => (
+                      <button
+                        key={emoji}
+                        onClick={() => addReaction(message.id, emoji)}
+                        className="text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full hover:bg-opacity-30 transition-colors"
+                      >
+                        {emoji} {users.length}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+          
+          {/* Typing Indicator */}
+          {typingUsers.length > 0 && (
+            <div className="flex justify-start">
+              <div className="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-2xl text-sm text-gray-600 dark:text-gray-400">
+                {typingUsers.map(u => u.user_name).join(', ')} está{typingUsers.length > 1 ? 'n' : ''} escribiendo...
+              </div>
+            </div>
+          )}
+          
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Message Input */}
+        <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+          <div className="flex items-center space-x-2">
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              onChange={handleFileUpload}
+              accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            />
+            
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+            >
+              <Icons.Paperclip />
+            </button>
+            
+            <button
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+            >
+              <Icons.Emoji />
+            </button>
+            
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Escribir mensaje..."
+                className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+              />
+              
+              {/* Simple Emoji Picker */}
+              {showEmojiPicker && (
+                <div className="absolute bottom-full mb-2 left-0 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-2">
+                  <div className="grid grid-cols-6 gap-1">
+                    {['😀', '😂', '😍', '🤔', '👍', '👎', '❤️', '🔥', '🎉', '💯', '👏', '🚀'].map(emoji => (
+                      <button
+                        key={emoji}
+                        onClick={() => {
+                          setNewMessage(prev => prev + emoji);
+                          setShowEmojiPicker(false);
+                        }}
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-lg"
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <button
+              onClick={sendMessage}
+              disabled={!newMessage.trim()}
+              className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
+            >
+              <Icons.Send />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className={darkMode ? 'dark' : ''}>
