@@ -394,6 +394,26 @@ function App() {
     }
   };
 
+  const loadNews = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/news`);
+      const data = await response.json();
+      setNews(data.news || []);
+    } catch (error) {
+      console.error('Error loading news:', error);
+    }
+  };
+
+  const loadNewsArticle = async (articleId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/news/${articleId}`);
+      const data = await response.json();
+      setSelectedNewsArticle(data);
+    } catch (error) {
+      console.error('Error loading news article:', error);
+    }
+  };
+
   const loadDashboardData = async () => {
     setLoading(true);
     try {
