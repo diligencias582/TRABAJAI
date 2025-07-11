@@ -237,7 +237,6 @@ metadata:
 
 test_plan:
   current_focus:
-    - "News API Backend - REST Endpoints"
     - "News Section Frontend - Complete UI"
   stuck_tasks: []
   test_all: false
