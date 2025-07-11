@@ -370,10 +370,18 @@ function App() {
 
   // Initialize chat when user is available
   useEffect(() => {
-    if (user && !chatSocket) {
+    // Initialize chat socket even without user for anonymous access
+    if (!chatSocket) {
       initializeChatSocket();
     }
-  }, [user]);
+  }, []);
+
+  // Initialize chat socket for existing users
+  useEffect(() => {
+    if (user && chatSocket) {
+      loadChatRooms();
+    }
+  }, [user, chatSocket]);
 
   // Cleanup on unmount
   useEffect(() => {
