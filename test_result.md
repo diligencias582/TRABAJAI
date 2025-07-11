@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "El usuario pidió agregar números a cada sección del dashboard de TRABAJAI (ejemplo: vacantes 2500, etc.). Se implementaron números realistas y convincentes para toda la plataforma. LUEGO pidió agregar un chat en vivo completo con todas las funcionalidades."
+user_problem_statement: "El usuario pidió agregar números a cada sección del dashboard de TRABAJAI (ejemplo: vacantes 2500, etc.). Se implementaron números realistas y convincentes para toda la plataforma. LUEGO pidió agregar un chat en vivo completo con todas las funcionalidades. FINALMENTE pidió agregar una sección de noticias y agregar a esa sección el artículo de https://www.totalcash.xyz/empleateai.html"
 
 backend:
   - task: "Dashboard Analytics API with Demo Numbers"
@@ -176,6 +176,18 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ COMPREHENSIVE CHAT SYSTEM TESTING COMPLETED: All 7 backend APIs tested successfully: 1) GET /api/chat/analytics - Shows 2 default rooms (general + support) as expected, 2) POST /api/chat/rooms - Creates custom rooms successfully, 3) GET /api/chat/rooms/{user_id} - Retrieves user rooms correctly, 4) GET /api/chat/messages/{room_id} - Returns message history, 5) GET /api/chat/rooms/{room_id}/participants - Shows room participants with online status, 6) POST /api/chat/rooms/{room_id}/join - Users can join rooms successfully, 7) DELETE /api/chat/rooms/{room_id}/leave - Users can leave rooms. All 4 chat types (support, candidate_employer, general, custom) are fully supported. Default rooms 'Chat General de TRABAJAI' and 'Soporte Técnico' created automatically. Chat analytics working perfectly. 24/24 backend tests passed including comprehensive chat functionality."
+
+  - task: "News API Backend - REST Endpoints"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "✅ Implementados endpoints de noticias: 1) GET /api/news - Retorna lista de artículos de noticias, 2) GET /api/news/{news_id} - Retorna artículo específico, 3) Incluye artículo completo de EMPLEATEAI desde https://www.totalcash.xyz/empleateai.html con título, contenido, imagen, fecha, categoría, autor y etiquetas, 4) Estructura JSON completa con metadatos y contenido formateado"
 
 frontend:
   - task: "Frontend Display of Demo Numbers"
