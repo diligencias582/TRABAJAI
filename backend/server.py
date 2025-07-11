@@ -13,6 +13,8 @@ from enum import Enum
 import base64
 import hashlib
 import base64
+import socketio
+from fastapi.responses import HTMLResponse
 
 app = FastAPI(title="TRABAJAI API", version="2.0.0")
 
@@ -24,6 +26,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Socket.IO setup
+sio = socketio.AsyncServer(
+    async_mode='asgi',
+    cors_allowed_origins=["*"],
+    logger=True
+)
+
+# Combine FastAPI and Socket.IO
+socket_app = socketio.ASGIApp(sio, app)
 
 # Configure Google Gemini
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', 'AIzaSyDFjNriW8ZeH0WkGn1B3EfU7yLqi3mM0Hs')
@@ -44,6 +56,10 @@ interviews_collection = db.interviews
 video_analytics_collection = db.video_analytics
 users_collection = db.users
 plans_collection = db.plans
+# New Chat Collections
+chat_rooms_collection = db.chat_rooms
+chat_messages_collection = db.chat_messages
+chat_participants_collection = db.chat_participants
 
 class JobNiche(str, Enum):
     TECH = "tech"
