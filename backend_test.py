@@ -775,7 +775,11 @@ def main():
         tester.test_get_room_participants,
         tester.test_get_room_messages,
         tester.test_leave_chat_room,
-        tester.test_chat_room_types
+        tester.test_chat_room_types,
+        # News API Tests
+        tester.test_get_news,
+        tester.test_get_specific_news_article,
+        tester.test_get_invalid_news_article
     ]
     
     for test in tests:
