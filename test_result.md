@@ -223,11 +223,14 @@ frontend:
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "main"
           comment: "✅ Implementada sección completa de noticias frontend: 1) Navegación con botón 'Noticias' en navbar, 2) Vista principal con grid de artículos, 3) Vista detallada de artículo individual, 4) Incluye artículo de EMPLEATEAI con formato completo, 5) Diseño responsivo con cards, imágenes, categorías, fechas, 6) Funcionalidades: navegación entre vistas, renderizado de markdown, etiquetas, autor, 7) Icono de noticias agregado a componente Icons, 8) Estado de carga y vista vacía manejados correctamente"
+        - working: true
+          agent: "testing"
+          comment: "✅ NEWS SECTION AUTO-RELOAD TESTING COMPLETED: Comprehensive testing performed for auto-reload/refresh issues. Key findings: 1) Navigation to news section works WITHOUT page refresh - SPA navigation functioning correctly, 2) News articles load properly from backend API (/api/news), 3) EMPLEATEAI article displays correctly with all content, 4) Article detail view navigation works without page refresh, 5) Back navigation ('Volver a Noticias') functions properly without refresh, 6) NO AUTO-RELOAD ISSUES DETECTED - all navigation uses React state management, 7) Backend API verified working (returns proper JSON with EMPLEATEAI article), 8) Minor issue: Article clicking has some DOM stability issues during testing but core functionality works. Overall: News section is fully functional with proper SPA behavior and no page refresh problems."
 
 metadata:
   created_by: "main_agent"
