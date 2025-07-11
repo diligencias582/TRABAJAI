@@ -593,6 +593,157 @@ class TrabajaAITester:
             print(f"❌ Failed - Error: {str(e)}")
             return False, {}
 
+    # ============================================================================
+    # NEWS API TESTS
+    # ============================================================================
+    
+    def test_get_news(self):
+        """Test retrieving all news articles"""
+        success, response = self.run_test(
+            "Get All News Articles",
+            "GET",
+            "api/news",
+            200
+        )
+        
+        if success:
+            news_articles = response.get('news', [])
+            print(f"📰 Retrieved {len(news_articles)} news articles")
+            
+            if len(news_articles) > 0:
+                article = news_articles[0]
+                expected_fields = ['id', 'title', 'summary', 'content', 'image', 'date', 'category', 'author', 'tags']
+                
+                print(f"📋 Checking article structure:")
+                all_fields_present = True
+                for field in expected_fields:
+                    if field in article:
+                        print(f"  ✅ {field}: Present")
+                    else:
+                        print(f"  ❌ {field}: Missing")
+                        all_fields_present = False
+                
+                if all_fields_present:
+                    print("🎉 All required fields present in news articles!")
+                else:
+                    print("⚠️  Some required fields missing from news articles")
+                    
+                # Check specific EMPLEATEAI article content
+                empleateai_article = next((art for art in news_articles if art['id'] == 'empleateai-revolucion-dominicana'), None)
+                if empleateai_article:
+                    print(f"📄 EMPLEATEAI Article Verification:")
+                    expected_values = {
+                        'title': 'EMPLEATEAI: Agencia de Empleo creada por estudiantes de San José de Ocoa',
+                        'category': 'Tecnología',
+                        'author': 'Instituto Social de Tecnificación Moderna (ISTEM)',
+                        'date': '2024-07-15',
+                        'image': 'https://www.totalcash.xyz/images/agenciai.jpg'
+                    }
+                    
+                    for field, expected_value in expected_values.items():
+                        actual_value = empleateai_article.get(field)
+                        status = "✅" if actual_value == expected_value else "❌"
+                        print(f"  {status} {field}: {actual_value}")
+                    
+                    # Check tags
+                    expected_tags = ["inteligencia artificial", "empleo", "educación", "república dominicana", "innovación"]
+                    actual_tags = empleateai_article.get('tags', [])
+                    tags_match = all(tag in actual_tags for tag in expected_tags)
+                    tags_status = "✅" if tags_match else "❌"
+                    print(f"  {tags_status} tags: {actual_tags}")
+                    
+                    if tags_match and all(empleateai_article.get(field) == expected_value for field, expected_value in expected_values.items()):
+                        print("🎉 EMPLEATEAI article content verified successfully!")
+                    else:
+                        print("⚠️  EMPLEATEAI article content doesn't match expected values")
+                else:
+                    print("❌ EMPLEATEAI article not found in news list")
+        
+        return success
+
+    def test_get_specific_news_article(self):
+        """Test retrieving the specific EMPLEATEAI news article"""
+        news_id = "empleateai-revolucion-dominicana"
+        
+        success, response = self.run_test(
+            "Get Specific News Article (EMPLEATEAI)",
+            "GET",
+            f"api/news/{news_id}",
+            200
+        )
+        
+        if success:
+            print(f"📰 Retrieved specific article: {response.get('title', 'Unknown')}")
+            
+            # Verify all expected fields are present
+            expected_fields = ['id', 'title', 'summary', 'content', 'image', 'date', 'category', 'author', 'tags']
+            all_fields_present = True
+            
+            print(f"📋 Article structure verification:")
+            for field in expected_fields:
+                if field in response:
+                    print(f"  ✅ {field}: Present")
+                else:
+                    print(f"  ❌ {field}: Missing")
+                    all_fields_present = False
+            
+            # Verify specific content
+            expected_values = {
+                'id': 'empleateai-revolucion-dominicana',
+                'title': 'EMPLEATEAI: Agencia de Empleo creada por estudiantes de San José de Ocoa',
+                'category': 'Tecnología',
+                'author': 'Instituto Social de Tecnificación Moderna (ISTEM)',
+                'date': '2024-07-15',
+                'image': 'https://www.totalcash.xyz/images/agenciai.jpg'
+            }
+            
+            print(f"📄 Content verification:")
+            content_correct = True
+            for field, expected_value in expected_values.items():
+                actual_value = response.get(field)
+                status = "✅" if actual_value == expected_value else "❌"
+                print(f"  {status} {field}: {actual_value}")
+                if actual_value != expected_value:
+                    content_correct = False
+            
+            # Check tags
+            expected_tags = ["inteligencia artificial", "empleo", "educación", "república dominicana", "innovación"]
+            actual_tags = response.get('tags', [])
+            tags_match = all(tag in actual_tags for tag in expected_tags)
+            tags_status = "✅" if tags_match else "❌"
+            print(f"  {tags_status} tags: Contains all expected tags")
+            
+            # Check content length (should be substantial)
+            content = response.get('content', '')
+            content_length_ok = len(content) > 1000  # Should be a substantial article
+            content_status = "✅" if content_length_ok else "❌"
+            print(f"  {content_status} content_length: {len(content)} characters")
+            
+            if all_fields_present and content_correct and tags_match and content_length_ok:
+                print("🎉 EMPLEATEAI article retrieved and verified successfully!")
+            else:
+                print("⚠️  Some issues found with the EMPLEATEAI article")
+        
+        return success
+
+    def test_get_invalid_news_article(self):
+        """Test retrieving a non-existent news article (should return 404)"""
+        invalid_news_id = "invalid-article-id"
+        
+        success, response = self.run_test(
+            "Get Invalid News Article (404 Test)",
+            "GET",
+            f"api/news/{invalid_news_id}",
+            404
+        )
+        
+        if success:
+            print("✅ Correctly returned 404 for invalid news article ID")
+        else:
+            print("❌ Should have returned 404 for invalid news article ID")
+        
+        return success
+
 def main():
     # Get the backend URL from the frontend .env file
     backend_url = "https://ca4681fc-5333-4e13-9e57-bfa98537b98b.preview.emergentagent.com"
