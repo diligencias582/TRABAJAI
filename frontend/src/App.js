@@ -70,6 +70,266 @@ function App() {
   const [selectedChatType, setSelectedChatType] = useState('general');
   const typingTimeoutRef = useRef(null);
   const messagesEndRef = useRef(null);
+  // Chat functions
+  const initializeChatSocket = () => {
+    if (chatSocket) return;
+    
+    const io = require('socket.io-client');
+    const socket = io(API_BASE_URL, {
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5,
+      maxReconnectionAttempts: 5,
+      timeout: 20000,
+      forceNew: true
+    });
+
+    socket.on('connect', () => {
+      console.log('Connected to chat server');
+      setChatSocket(socket);
+      loadChatRooms();
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from chat server');
+    });
+
+    socket.on('new_message', (message) => {
+      setChatMessages(prev => [...prev, message]);
+      if (currentChatRoom && message.room_id === currentChatRoom.id) {
+        setChatNotifications(prev => prev + 1);
+      }
+      scrollToBottom();
+    });
+
+    socket.on('user_joined', (data) => {
+      console.log('User joined:', data);
+      setOnlineUsers(prev => [...prev.filter(u => u.user_id !== data.user_id), data]);
+    });
+
+    socket.on('user_left', (data) => {
+      console.log('User left:', data);
+      setOnlineUsers(prev => prev.filter(u => u.user_id !== data.user_id));
+    });
+
+    socket.on('user_typing', (data) => {
+      if (data.typing) {
+        setTypingUsers(prev => [...prev.filter(u => u.user_id !== data.user_id), data]);
+      } else {
+        setTypingUsers(prev => prev.filter(u => u.user_id !== data.user_id));
+      }
+    });
+
+    socket.on('reaction_added', (data) => {
+      setChatMessages(prev => 
+        prev.map(msg => 
+          msg.id === data.message_id 
+            ? { ...msg, reactions: data.reactions }
+            : msg
+        )
+      );
+    });
+
+    socket.on('error', (error) => {
+      console.error('Chat error:', error);
+    });
+
+    return socket;
+  };
+
+  const loadChatRooms = async () => {
+    try {
+      const userId = user?.id || 'anonymous';
+      const response = await fetch(`${API_BASE_URL}/api/chat/rooms/${userId}`);
+      const rooms = await response.json();
+      setChatRooms(rooms);
+    } catch (error) {
+      console.error('Error loading chat rooms:', error);
+    }
+  };
+
+  const joinChatRoom = (room) => {
+    if (!chatSocket || !user) return;
+    
+    if (currentChatRoom) {
+      chatSocket.emit('leave_room', {
+        room_id: currentChatRoom.id,
+        user_id: user.id
+      });
+    }
+
+    setCurrentChatRoom(room);
+    setChatView('chat');
+    
+    chatSocket.emit('join_room', {
+      room_id: room.id,
+      user_id: user.id
+    });
+
+    loadChatMessages(room.id);
+  };
+
+  const loadChatMessages = async (roomId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/chat/messages/${roomId}`);
+      const data = await response.json();
+      setChatMessages(data.messages || []);
+      setTimeout(scrollToBottom, 100);
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
+  };
+
+  const sendMessage = () => {
+    if (!newMessage.trim() || !chatSocket || !currentChatRoom || !user) return;
+
+    chatSocket.emit('send_message', {
+      room_id: currentChatRoom.id,
+      user_id: user.id,
+      user_name: user.name,
+      message: newMessage,
+      message_type: 'text'
+    });
+
+    setNewMessage('');
+    stopTyping();
+  };
+
+  const startTyping = () => {
+    if (!chatSocket || !currentChatRoom || !user || isTyping) return;
+    
+    setIsTyping(true);
+    chatSocket.emit('typing_start', {
+      room_id: currentChatRoom.id,
+      user_id: user.id,
+      user_name: user.name
+    });
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
+      stopTyping();
+    }, 3000);
+  };
+
+  const stopTyping = () => {
+    if (!chatSocket || !currentChatRoom || !user || !isTyping) return;
+    
+    setIsTyping(false);
+    chatSocket.emit('typing_stop', {
+      room_id: currentChatRoom.id,
+      user_id: user.id,
+      user_name: user.name
+    });
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    } else if (e.key !== 'Enter') {
+      startTyping();
+    }
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const addReaction = (messageId, emoji) => {
+    if (!chatSocket || !user) return;
+    
+    chatSocket.emit('add_reaction', {
+      message_id: messageId,
+      emoji: emoji,
+      user_id: user.id
+    });
+  };
+
+  const createChatRoom = async (name, type, participants = []) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/chat/rooms`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          room_type: type,
+          participants: [user?.id || 'anonymous', ...participants]
+        })
+      });
+      
+      const data = await response.json();
+      if (response.ok) {
+        loadChatRooms();
+        return data.room_id;
+      }
+    } catch (error) {
+      console.error('Error creating chat room:', error);
+    }
+  };
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target.result;
+      if (chatSocket && currentChatRoom && user) {
+        chatSocket.emit('send_message', {
+          room_id: currentChatRoom.id,
+          user_id: user.id,
+          user_name: user.name,
+          message: file.name,
+          message_type: file.type.startsWith('image/') ? 'image' : 'file',
+          attachments: [base64]
+        });
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const formatTime = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('es-ES', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
+
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('es-ES', { 
+      day: '2-digit', 
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+  // Initialize chat when user is available
+  useEffect(() => {
+    if (user && !chatSocket) {
+      initializeChatSocket();
+    }
+  }, [user]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (chatSocket) {
+        chatSocket.disconnect();
+      }
+    };
+  }, [chatSocket]);
   const fileInputRef = useRef(null);
 
   // Load data on mount
