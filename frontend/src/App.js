@@ -132,10 +132,9 @@ function App() {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionDelay: 1000,
-      reconnectionAttempts: 5,
-      maxReconnectionAttempts: 5,
-      timeout: 20000,
-      forceNew: true
+      reconnectionAttempts: 3,
+      maxReconnectionAttempts: 3,
+      timeout: 20000
     });
 
     socket.on('connect', () => {
