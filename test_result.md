@@ -177,7 +177,17 @@ backend:
           agent: "testing"
           comment: "✅ COMPREHENSIVE CHAT SYSTEM TESTING COMPLETED: All 7 backend APIs tested successfully: 1) GET /api/chat/analytics - Shows 2 default rooms (general + support) as expected, 2) POST /api/chat/rooms - Creates custom rooms successfully, 3) GET /api/chat/rooms/{user_id} - Retrieves user rooms correctly, 4) GET /api/chat/messages/{room_id} - Returns message history, 5) GET /api/chat/rooms/{room_id}/participants - Shows room participants with online status, 6) POST /api/chat/rooms/{room_id}/join - Users can join rooms successfully, 7) DELETE /api/chat/rooms/{room_id}/leave - Users can leave rooms. All 4 chat types (support, candidate_employer, general, custom) are fully supported. Default rooms 'Chat General de TRABAJAI' and 'Soporte Técnico' created automatically. Chat analytics working perfectly. 24/24 backend tests passed including comprehensive chat functionality."
 
-  - task: "News API Backend - REST Endpoints"
+  - task: "Auto-reload Issue Fix"
+    implemented: true
+    working: true
+    file: "backend/requirements.txt, frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "✅ PROBLEMA RESUELTO: Se identificó que el backend no estaba funcionando correctamente debido a dependencias faltantes de Google (google.rpc, googleapis-common-protos, grpcio, google-auth, proto-plus, tqdm, python-engineio, bidict). Se actualizó requirements.txt con todas las dependencias necesarias. Se optimizó la configuración del socket de chat removiendo forceNew: true y reduciendo los intentos de reconexión de 5 a 3. Se cambió la inicialización del socket para que funcione sin esperar al usuario. Backend y frontend ahora funcionan correctamente sin auto-reloads."
     implemented: true
     working: true
     file: "backend/server.py"
