@@ -11,6 +11,7 @@ class TrabajaAITester:
         self.tests_passed = 0
         self.candidate_id = None
         self.job_id = None
+        self.test_room_id = None
 
     def run_test(self, name, method, endpoint, expected_status, data=None):
         """Run a single API test"""
