@@ -371,6 +371,225 @@ class TrabajaAITester:
         
         return success
 
+    # ============================================================================
+    # CHAT SYSTEM TESTS
+    # ============================================================================
+    
+    def test_chat_analytics(self):
+        """Test chat analytics endpoint"""
+        success, response = self.run_test(
+            "Chat Analytics",
+            "GET",
+            "api/chat/analytics",
+            200
+        )
+        
+        if success:
+            print(f"📊 Chat Analytics Results:")
+            print(f"  Total rooms: {response.get('total_rooms', 0)}")
+            print(f"  Total messages: {response.get('total_messages', 0)}")
+            print(f"  Active users: {response.get('active_users', 0)}")
+            print(f"  Recent messages (24h): {response.get('recent_messages_24h', 0)}")
+            
+            room_types = response.get('room_types', {})
+            print(f"  Room types:")
+            print(f"    Support: {room_types.get('support', 0)}")
+            print(f"    General: {room_types.get('general', 0)}")
+            print(f"    Candidate-Employer: {room_types.get('candidate_employer', 0)}")
+            print(f"    Custom: {room_types.get('custom', 0)}")
+            
+            # Check expected default rooms
+            expected_total_rooms = 2  # general-chat and support-chat
+            expected_support = 1
+            expected_general = 1
+            
+            if (response.get('total_rooms') == expected_total_rooms and 
+                room_types.get('support') == expected_support and 
+                room_types.get('general') == expected_general):
+                print("✅ Default rooms created correctly!")
+            else:
+                print("⚠️  Default rooms may not be set up correctly")
+        
+        return success
+
+    def test_create_chat_room(self):
+        """Test creating a custom chat room"""
+        room_data = {
+            "name": f"Test Room {datetime.now().strftime('%H%M%S')}",
+            "room_type": "custom",
+            "participants": ["user123", "user456"],
+            "metadata": {
+                "description": "Test room for API testing",
+                "created_for": "testing"
+            }
+        }
+        
+        success, response = self.run_test(
+            "Create Chat Room",
+            "POST",
+            "api/chat/rooms",
+            200,
+            data=room_data
+        )
+        
+        if success and 'room_id' in response:
+            self.test_room_id = response['room_id']
+            print(f"Created test room with ID: {self.test_room_id}")
+        
+        return success
+
+    def test_get_user_rooms(self):
+        """Test getting rooms for a user"""
+        test_user_id = "user123"
+        
+        success, response = self.run_test(
+            "Get User Rooms",
+            "GET",
+            f"api/chat/rooms/{test_user_id}",
+            200
+        )
+        
+        if success:
+            print(f"Retrieved {len(response)} rooms for user {test_user_id}")
+            for room in response:
+                print(f"  Room: {room.get('name')} (Type: {room.get('room_type')})")
+        
+        return success
+
+    def test_join_chat_room(self):
+        """Test joining a chat room"""
+        # Try to join the general chat room
+        room_id = "general-chat"
+        user_id = "testuser789"
+        
+        success, response = self.run_test(
+            "Join Chat Room",
+            "POST",
+            f"api/chat/rooms/{room_id}/join?user_id={user_id}",
+            200
+        )
+        
+        if success:
+            print(f"Successfully joined room {room_id}")
+        
+        return success
+
+    def test_get_room_participants(self):
+        """Test getting participants in a room"""
+        room_id = "general-chat"
+        
+        success, response = self.run_test(
+            "Get Room Participants",
+            "GET",
+            f"api/chat/rooms/{room_id}/participants",
+            200
+        )
+        
+        if success:
+            participants = response.get('participants', [])
+            print(f"Room {room_id} has {len(participants)} participants")
+            for participant in participants:
+                print(f"  User: {participant.get('user_id')} (Online: {participant.get('is_online')})")
+        
+        return success
+
+    def test_get_room_messages(self):
+        """Test getting messages from a room"""
+        room_id = "general-chat"
+        
+        success, response = self.run_test(
+            "Get Room Messages",
+            "GET",
+            f"api/chat/messages/{room_id}",
+            200
+        )
+        
+        if success:
+            messages = response.get('messages', [])
+            print(f"Room {room_id} has {len(messages)} messages")
+            if messages:
+                latest_message = messages[-1]
+                print(f"  Latest message from {latest_message.get('user_name')}: {latest_message.get('message')[:50]}...")
+        
+        return success
+
+    def test_leave_chat_room(self):
+        """Test leaving a chat room"""
+        room_id = "general-chat"
+        user_id = "testuser789"
+        
+        success, response = self.run_test(
+            "Leave Chat Room",
+            "DELETE",
+            f"api/chat/rooms/{room_id}/leave?user_id={user_id}",
+            200
+        )
+        
+        if success:
+            print(f"Successfully left room {room_id}")
+        
+        return success
+
+    def test_chat_room_types(self):
+        """Test that all expected chat room types are supported"""
+        expected_types = ["support", "candidate_employer", "general", "custom"]
+        
+        # Test creating rooms of different types
+        for room_type in expected_types:
+            room_data = {
+                "name": f"Test {room_type.title()} Room",
+                "room_type": room_type,
+                "participants": ["testuser"],
+                "metadata": {"test": True}
+            }
+            
+            success, response = self.run_test(
+                f"Create {room_type.title()} Room",
+                "POST",
+                "api/chat/rooms",
+                200,
+                data=room_data
+            )
+            
+            if not success:
+                return False
+        
+        print("✅ All chat room types supported")
+        return True
+
+    def run_delete_test(self, name, endpoint, expected_status, params=None):
+        """Run a DELETE API test"""
+        url = f"{self.base_url}/{endpoint}"
+        if params:
+            url += "?" + "&".join([f"{k}={v}" for k, v in params.items()])
+        
+        headers = {'Content-Type': 'application/json'}
+        
+        self.tests_run += 1
+        print(f"\n🔍 Testing {name}...")
+        
+        try:
+            response = requests.delete(url, headers=headers)
+            success = response.status_code == expected_status
+            if success:
+                self.tests_passed += 1
+                print(f"✅ Passed - Status: {response.status_code}")
+                try:
+                    return success, response.json()
+                except:
+                    return success, {}
+            else:
+                print(f"❌ Failed - Expected {expected_status}, got {response.status_code}")
+                try:
+                    print(f"Response: {response.text}")
+                    return False, response.json()
+                except:
+                    return False, {}
+
+        except Exception as e:
+            print(f"❌ Failed - Error: {str(e)}")
+            return False, {}
+
 def main():
     # Get the backend URL from the frontend .env file
     backend_url = "https://de9976f1-2523-4720-844d-e3eacb18c4a0.preview.emergentagent.com"
