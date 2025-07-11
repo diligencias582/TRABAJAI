@@ -2723,6 +2723,9 @@ function App() {
           {currentView === 'pricing' && <PricingPlans />}
           {currentView === 'login' && <LoginForm />}
         </div>
+        
+        {/* Chat System */}
+        <ChatSystem />
       </div>
     </div>
   );
