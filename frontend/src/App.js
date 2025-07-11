@@ -2384,6 +2384,13 @@ function App() {
                 Empleos
               </button>
               <button
+                onClick={() => setCurrentView('news')}
+                className={`nav-item ${currentView === 'news' ? 'active' : ''}`}
+              >
+                <Icons.News className="mr-2" />
+                Noticias
+              </button>
+              <button
                 onClick={() => setCurrentView('pricing')}
                 className={`nav-item ${currentView === 'pricing' ? 'active' : ''}`}
               >
