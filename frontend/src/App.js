@@ -2099,16 +2099,6 @@ function App() {
               <span className="hidden sm:inline">Grabar Video</span>
             </button>
           </div>
-            
-            {/* Quick Action Button */}
-            <button
-              onClick={() => setCurrentView('video-interview')}
-              className="btn-premium px-6 py-3 text-sm font-bold flex items-center gap-2"
-            >
-              <Icons.Video />
-              <span className="hidden sm:inline">Grabar Video</span>
-            </button>
-          </div>
         </div>
       </div>
     </nav>
