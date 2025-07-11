@@ -613,7 +613,16 @@ def main():
         tester.test_get_job_matches,
         tester.test_get_dashboard_analytics,
         tester.test_get_video_analytics,
-        tester.test_sector_distribution
+        tester.test_sector_distribution,
+        # Chat System Tests
+        tester.test_chat_analytics,
+        tester.test_create_chat_room,
+        tester.test_get_user_rooms,
+        tester.test_join_chat_room,
+        tester.test_get_room_participants,
+        tester.test_get_room_messages,
+        tester.test_leave_chat_room,
+        tester.test_chat_room_types
     ]
     
     for test in tests:
