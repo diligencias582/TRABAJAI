@@ -111,6 +111,9 @@ function App() {
   const [selectedChatType, setSelectedChatType] = useState('general');
   const typingTimeoutRef = useRef(null);
   const messagesEndRef = useRef(null);
+  // News states
+  const [news, setNews] = useState([]);
+  const [selectedNewsArticle, setSelectedNewsArticle] = useState(null);
   // Chat functions
   const initializeChatSocket = () => {
     if (chatSocket) return;
