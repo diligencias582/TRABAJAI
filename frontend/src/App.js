@@ -423,6 +423,61 @@ function App() {
     }
   };
 
+  const handleRegistrationSubmit = async (e) => {
+    e.preventDefault();
+    setRegistrationLoading(true);
+    setRegistrationMessage('');
+
+    const SUPABASE_URL = 'https://dshmmwyknvmxeeqsuxpt.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzaG1td3lrbnZteGVlcXN1eHB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY3ODMxMjMsImV4cCI6MjA1MjM1OTEyM30.8VgUPzBJhGKqBpJCOUMsYMhOxVGx7Z8eJXUEZQjfuac';
+
+    const data = {
+      id: crypto.randomUUID(),
+      nombre_completo: registrationFormData.nombre_completo.trim(),
+      edad: parseInt(registrationFormData.edad),
+      correo_electronico: registrationFormData.correo_electronico.trim(),
+      telefono: registrationFormData.telefono.trim()
+    };
+
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/inscripciones`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        setRegistrationMessage('✅ ¡Formulario enviado correctamente!');
+        setRegistrationFormData({
+          nombre_completo: '',
+          edad: '',
+          correo_electronico: '',
+          telefono: ''
+        });
+      } else {
+        const error = await response.text();
+        setRegistrationMessage('❌ Error al enviar: ' + error);
+      }
+    } catch (err) {
+      setRegistrationMessage('❌ Error de red o configuración.');
+    } finally {
+      setRegistrationLoading(false);
+    }
+  };
+
+  const handleRegistrationChange = (e) => {
+    const { name, value } = e.target;
+    setRegistrationFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const loadDashboardData = async () => {
     setLoading(true);
     try {
