@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import io from 'socket.io-client';
 import './App.css';
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
