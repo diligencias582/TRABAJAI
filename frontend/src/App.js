@@ -114,6 +114,15 @@ function App() {
   // News states
   const [news, setNews] = useState([]);
   const [selectedNewsArticle, setSelectedNewsArticle] = useState(null);
+  // Registration form states
+  const [registrationFormData, setRegistrationFormData] = useState({
+    nombre_completo: '',
+    edad: '',
+    correo_electronico: '',
+    telefono: ''
+  });
+  const [registrationMessage, setRegistrationMessage] = useState('');
+  const [registrationLoading, setRegistrationLoading] = useState(false);
   // Chat functions
   const initializeChatSocket = () => {
     if (chatSocket) return;
