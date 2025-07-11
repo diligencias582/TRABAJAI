@@ -463,15 +463,12 @@ class TrabajaAITester:
         room_id = "general-chat"
         user_id = "testuser789"
         
-        # Use POST with user_id in request body
-        join_data = {"user_id": user_id}
-        
+        # Use query parameter for user_id
         success, response = self.run_test(
             "Join Chat Room",
             "POST",
-            f"api/chat/rooms/{room_id}/join",
-            200,
-            data=join_data
+            f"api/chat/rooms/{room_id}/join?user_id={user_id}",
+            200
         )
         
         if success:
