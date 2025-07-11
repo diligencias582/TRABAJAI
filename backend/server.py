@@ -1298,9 +1298,6 @@ def initialize_default_chat_rooms():
 # Initialize default rooms on startup
 initialize_default_chat_rooms()
 
-# Create the combined app
-app = socket_app
-
 @app.get("/api/niches")
 async def get_niches():
     """Get all available job niches"""
