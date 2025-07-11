@@ -595,7 +595,7 @@ class TrabajaAITester:
 
 def main():
     # Get the backend URL from the frontend .env file
-    backend_url = "https://de9976f1-2523-4720-844d-e3eacb18c4a0.preview.emergentagent.com"
+    backend_url = "https://ca4681fc-5333-4e13-9e57-bfa98537b98b.preview.emergentagent.com"
     
     print(f"🚀 Starting TRABAJAI API tests using URL: {backend_url}")
     
