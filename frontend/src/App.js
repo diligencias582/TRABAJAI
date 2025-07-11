@@ -128,7 +128,6 @@ function App() {
   const initializeChatSocket = () => {
     if (chatSocket) return;
     
-    const io = require('socket.io-client');
     const socket = io(API_BASE_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
