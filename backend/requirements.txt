@@ -24,4 +24,6 @@ python-multipart>=0.0.9
 jq>=1.6.0
 google-generativeai==0.3.2
 google-ai-generativelanguage
+google-api-core
+google-cloud-core
 typer>=0.9.0
