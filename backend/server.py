@@ -170,6 +170,63 @@ class MatchResult(BaseModel):
     gaps_identified: List[str]
     success_projection: float
 
+# Chat Models
+class ChatRoomType(str, Enum):
+    SUPPORT = "support"
+    CANDIDATE_EMPLOYER = "candidate_employer"
+    GENERAL = "general"
+    CUSTOM = "custom"
+
+class ChatMessage(BaseModel):
+    id: str
+    room_id: str
+    user_id: str
+    user_name: str
+    message: str
+    message_type: str = "text"  # text, image, file, emoji
+    timestamp: datetime
+    edited: bool = False
+    reply_to: Optional[str] = None
+    attachments: List[str] = []
+    reactions: Dict[str, List[str]] = {}  # emoji -> [user_ids]
+
+class ChatRoom(BaseModel):
+    id: str
+    name: str
+    room_type: ChatRoomType
+    participants: List[str]
+    created_by: str
+    created_at: datetime
+    last_message: Optional[str] = None
+    last_activity: datetime
+    is_active: bool = True
+    metadata: Dict[str, Any] = {}  # For custom room data
+
+class ChatParticipant(BaseModel):
+    user_id: str
+    room_id: str
+    joined_at: datetime
+    last_seen: datetime
+    is_online: bool = False
+    is_typing: bool = False
+    role: str = "participant"  # participant, moderator, admin
+
+class MessageCreate(BaseModel):
+    room_id: str
+    message: str
+    message_type: str = "text"
+    reply_to: Optional[str] = None
+    attachments: List[str] = []
+
+class RoomCreate(BaseModel):
+    name: str
+    room_type: ChatRoomType
+    participants: List[str] = []
+    metadata: Dict[str, Any] = {}
+
+# Connected users for real-time features
+connected_users = {}
+typing_users = {}
 # Utility functions for authentication
 def hash_password(password: str) -> str:
     """Hash password using SHA-256"""
