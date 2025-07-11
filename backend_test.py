@@ -463,11 +463,15 @@ class TrabajaAITester:
         room_id = "general-chat"
         user_id = "testuser789"
         
+        # Use POST with user_id in request body
+        join_data = {"user_id": user_id}
+        
         success, response = self.run_test(
             "Join Chat Room",
             "POST",
-            f"api/chat/rooms/{room_id}/join?user_id={user_id}",
-            200
+            f"api/chat/rooms/{room_id}/join",
+            200,
+            data=join_data
         )
         
         if success:
@@ -519,11 +523,12 @@ class TrabajaAITester:
         room_id = "general-chat"
         user_id = "testuser789"
         
-        success, response = self.run_test(
+        # Use the run_delete_test method with proper parameters
+        success, response = self.run_delete_test(
             "Leave Chat Room",
-            "DELETE",
-            f"api/chat/rooms/{room_id}/leave?user_id={user_id}",
-            200
+            f"api/chat/rooms/{room_id}/leave",
+            200,
+            params={"user_id": user_id}
         )
         
         if success:
